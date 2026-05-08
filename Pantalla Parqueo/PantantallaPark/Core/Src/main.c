@@ -33,11 +33,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+
+//#include "neopixel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-uint8_t dma_libre = 0;
+uint8_t dma_libre = 1;
 uint8_t cant_cars = 0; 
 //uint8_t PosCars = 0;
 uint8_t sot1 = 0;
@@ -49,6 +52,15 @@ uint8_t cant2 = 0;
 char num;
 
 uint16_t park[68*20];
+uint16_t carA[246*68];
+uint16_t carB[246*68];
+uint16_t he[183*80];
+
+uint8_t park1 = 0;
+uint8_t park2 = 0;
+uint8_t park3 = 0;
+uint8_t park4 = 0;
+uint8_t park5 = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -62,6 +74,9 @@ uint16_t park[68*20];
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc2;
+DMA_HandleTypeDef hdma_adc2;
+
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_tx;
 
@@ -73,6 +88,9 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
+volatile uint16_t ADCVal[5];
+volatile uint8_t adc_index = 0;
+float brilloled;
 
 
 /* USER CODE END PV */
@@ -87,6 +105,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_UART5_Init(void);
+static void MX_ADC2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -96,27 +115,28 @@ static void MX_UART5_Init(void);
 
 //********************************FUNCIONES VARIAS *********************************//
 //-------------------Función para var cantidad de parqueos libres ----------------------
+
 void parqueos_disponiblesA(uint8_t cant)
 {
 	if(cant == 0)
 	{
-		LCD_Print("9", 110, 110, 2, 0xF800, 0x0000);
+		LCD_Print("9", 270, 140, 2, 0x053d, 0xe71c);
 	}
 	else if (cant == 1)
 	{
-		LCD_Print("8", 110, 110, 2, 0xF800, 0x0000);
+		LCD_Print("8", 270, 140, 2, 0x053d, 0xe71c);
 	}
 	else if (cant == 2)
 		{
-			LCD_Print("7", 110, 110, 2, 0xF800, 0x0000);
+		LCD_Print("7", 270, 140, 2, 0x053d, 0xe71c);
 		}
 	else if (cant == 3)
 		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
+		LCD_Print("6", 270, 140, 2, 0x053d, 0xe71c);
 		}
 	else if (cant == 4)
 		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
+		LCD_Print("5", 270, 140, 2, 0x053d, 0xe71c);
 		}
 	else if (cant == 5)
 		{
@@ -146,7 +166,6 @@ void parqueos_disponiblesB(uint8_t cant)
 
 }
 
-
 /* USER CODE END 0 */
 
 /**
@@ -155,7 +174,6 @@ void parqueos_disponiblesB(uint8_t cant)
   */
 int main(void)
 {
-
 
   /* USER CODE BEGIN 1 */
 
@@ -187,35 +205,217 @@ int main(void)
   MX_TIM2_Init();
   MX_FATFS_Init();
   MX_UART5_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
 	LCD_Init();
 	LCD_Clear(0x00);
 
 	HAL_TIM_Base_Start_IT(&htim2); // Inicia el Timer 2 con Interrupciones
+	HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADCVal, 5);
 	LCD_Bitmap(0, 0, 320, 240, parking);
-	LCD_Print("0", 260, 140, 2, 0x053d, 0xe71c); // Numero inicial en A
-	LCD_Print("0", 260, 177, 2, 0x053d, 0xe71c); // Numero inicial en B
+	LCD_Print("0", 270, 140, 2, 0x053d, 0xe71c); // Numero inicial en A
+	LCD_Print("0", 270, 177, 2, 0x053d, 0xe71c); // Numero inicial en B
 
-	LCD_DibujarSpriteUniversal(260, 210, 68, 20, semaforo, 1, 128, parking, 320, 0xe71c, park);
+	LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
+	/*
+	pixelClear();
+	setPixelColor(0,0,0,255); //Rojo
+	setPixelColor(1,255,255,0); //Verde
+	setPixelColor(2,0,0,255); //Rojo
+	setPixelColor(3,255,255,0); //Verde
+	setPixelColor(4,0,0,255); //Rojo
+	setPixelColor(5,255,255,0); //Verde
+	setPixelColor(6,0,0,255); //Rojo
+	setPixelColor(7,255,255,0); //Verde
+	setPixelColor(8,0,0,255); //Rojo
+	pixelShow();
+	*/
+
 	 //HAL_UART_Receive_IT(&huart2, &rxData, 1); // Disparar interrupción cuando reciba un byte
 	 //HAL_UART_Receive_IT(&huart1, &rx_data, 1); // Disparar interrupción cuando reciba un byte
 	 //HAL_UART_Receive_IT(&huart3, &rxData, 1); // Disparar interrupción cuando reciba un byte
 
   /* USER CODE END 2 */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	uint32_t ultimo_print_uart = 0;
+
+	char uart_buf[100];
 
 	while (1) {
 		//Logica para detección parqueo ocupado y Animación
 		// Añadir ADC
-		switch(sot1)
+
+
+	if (HAL_GetTick() - ultimo_print_uart >= 500) {
+				ultimo_print_uart = HAL_GetTick();
+
+				sprintf(uart_buf, "CH0: %u | CH1: %u | CH9: %u | CH10: %u\r\n",
+						ADCVal[0], ADCVal[1], ADCVal[2], ADCVal[3]);
+
+				HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, strlen(uart_buf), 100);
+			}
+
+
+	if (ADCVal[0]<1600)
+	{
+		if (park1 == 0)
 		{
-		case 1:
-			//Ejecutar sprite del primer parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
+			uint8_t val = rand() % 6;
+			park1 = 1;
+			LCD_DibujarSpriteUniversal(13, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
 			cant1++;
 			parqueos_disponiblesA(cant1);
-		break;
+		}
+
+
+	}
+
+	else if (ADCVal[0]>1800)
+	{
+		if (park1 == 1)
+		{
+			park1 = 0;
+			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carB);
+			cant1--;
+			parqueos_disponiblesA(cant1);
+		}
+
+	}
+
+
+
+
+
+	if (ADCVal[1]<1600)
+	{
+		if (park2 == 0)
+		{
+			park2 = 1;
+			uint8_t val = rand() % 6;
+			LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			cant1++;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+	else if (ADCVal[1]>1500)
+	{
+		if (park2 == 1)
+		{
+			park2 = 0;
+			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			cant1--;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+
+
+
+	if (ADCVal[2]<1500)
+	{
+		if (park3 == 0)
+		{
+			uint8_t val = rand() % 6;
+			park3 = 1;
+			LCD_DibujarSpriteUniversal(109, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			cant1++;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+	else if (ADCVal[2]>1500)
+	{
+		if (park3 == 1)
+		{
+			park3 = 0;
+			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			cant1--;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+
+
+
+
+
+	if (ADCVal[3]<1500)
+	{
+		if (park4 == 0)
+		{
+			uint8_t val = rand() % 6;
+			park4 = 1;
+			LCD_DibujarSpriteUniversal(156, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			cant1++;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+	else if (ADCVal[3]>1500)
+	{
+		if (park4 == 1)
+		{
+			park4 = 0;
+			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			cant1--;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+
+
+
+	if (ADCVal[4]<1500)
+		{
+			if (park5 == 0)
+			{
+				park5 = 1;
+				LCD_DibujarSpriteUniversal(232, 10, 61, 80, helicop, 1, 183, parking, 320, 0xa501, he);
+				cant1++;
+				parqueos_disponiblesA(cant1);
+			}
+
+			//parqueos_disponiblesA(cant1);
+		}
+
+	else if (ADCVal[4]>1500)
+	{
+		if (park5 == 1)
+		{
+			park5 = 0;
+			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			cant1--;
+			parqueos_disponiblesA(cant1);
+		}
+
+		//parqueos_disponiblesA(cant1);
+	}
+
+		/*
+		else if(ADCVal[0]>1500)
+		{
+			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
+			cant1++;
+			//parqueos_disponiblesA(cant1);
+		}
+		*/
+
+		/*
 		case 2:
 			//Ejecutar sprite del segundo parqueo
 			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
@@ -236,10 +436,11 @@ int main(void)
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		break;
-		}
+		*/
+		//}
 
 
-
+		/*
 		switch(sot2)
 		{
 		case 5:
@@ -277,6 +478,8 @@ int main(void)
 			parqueos_disponiblesB(cant2);
 		break;
 		}
+
+		*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -329,6 +532,94 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC2_Init(void)
+{
+
+  /* USER CODE BEGIN ADC2_Init 0 */
+
+  /* USER CODE END ADC2_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC2_Init 1 */
+
+  /* USER CODE END ADC2_Init 1 */
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc2.Instance = ADC2;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV8;
+  hadc2.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc2.Init.ScanConvMode = ENABLE;
+  hadc2.Init.ContinuousConvMode = ENABLE;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc2.Init.NbrOfConversion = 5;
+  hadc2.Init.DMAContinuousRequests = ENABLE;
+  hadc2.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = 2;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Rank = 3;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_10;
+  sConfig.Rank = 4;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Rank = 5;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC2_Init 2 */
+
+  /* USER CODE END ADC2_Init 2 */
+
 }
 
 /**
@@ -556,6 +847,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA2_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
   /* DMA2_Stream3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
@@ -621,6 +915,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
         dma_libre = 1;

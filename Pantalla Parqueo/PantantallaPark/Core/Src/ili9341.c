@@ -507,13 +507,15 @@ void LCD_Bitmap_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, con
 void LCD_DibujarSpriteUniversal(int x, int y, int w, int h, const uint16_t *sprite_map, int frame, int ancho_ss, const uint16_t *fondo_global, int ancho_fondo_total, uint16_t color_transparente, uint16_t *buffer_dest) {
     int inicio_frame = frame * w;
 
+    uint16_t color_t_invertido = (color_transparente << 8) | (color_transparente >> 8);
+
     for (int j = 0; j < h; j++) {
         for (int i = 0; i < w; i++) {
             uint32_t sprite_idx = (uint32_t)(j * ancho_ss) + inicio_frame + i;
             uint16_t sprite_pixel = sprite_map[sprite_idx];
             uint16_t final_pixel;
 
-            if (sprite_pixel == color_transparente) {
+            if (sprite_pixel == color_transparente || sprite_pixel == color_t_invertido) {
                 uint32_t fondo_idx = (uint32_t)(y + j) * (uint32_t)ancho_fondo_total + (x + i);
                 final_pixel = fondo_global[fondo_idx];
             } else {
@@ -524,6 +526,7 @@ void LCD_DibujarSpriteUniversal(int x, int y, int w, int h, const uint16_t *spri
         }
     }
     while(!dma_libre); // Esperar a que el DMA anterior termine
+    dma_libre = 0;
     LCD_Bitmap_DMA(x, y, w, h, buffer_dest);
 }
 //***************************************************************************************************************************************
@@ -580,7 +583,7 @@ void ProcesarEnemigo(NaveEnemiga *e, int frame_enemigo, const uint16_t *spr_en, 
             e->dist_recorrida = 0;
             e->b_activo = 1;
             e->ultimo_disparo = HAL_GetTick();
-            extern UART_HandleTypeDef huart5;
+            //extern UART_HandleTypeDef huart5;
             //HAL_UART_Transmit(&huart5, (uint8_t*)"6", 1, 10);
             //extern UART_HandleTypeDef huart2; // Asegura que la función conozca huart2
             //HAL_UART_Transmit(&huart2, (uint8_t*)"6", 1, 10);
