@@ -43,7 +43,6 @@
 uint8_t dma_libre = 1;
 uint8_t cant_cars = 0; 
 //uint8_t PosCars = 0;
-uint8_t sot1 = 0;
 uint8_t sot2 = 0;
 
 uint8_t cant1 = 0;
@@ -56,11 +55,18 @@ uint16_t carA[246*68];
 uint16_t carB[246*68];
 uint16_t he[183*80];
 
-uint8_t park1 = 0;
-uint8_t park2 = 0;
-uint8_t park3 = 0;
-uint8_t park4 = 0;
-uint8_t park5 = 0;
+uint8_t park1A = 0;
+uint8_t park2A = 0;
+uint8_t park3A = 0;
+uint8_t park4A = 0;
+uint8_t park5A = 0;
+
+
+uint8_t park1B = 0;
+uint8_t park2B = 0;
+uint8_t park3B = 0;
+uint8_t park4B = 0;
+uint8_t park5B = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -89,6 +95,7 @@ UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 volatile uint16_t ADCVal[5];
+volatile uint16_t sotB[4];
 volatile uint8_t adc_index = 0;
 float brilloled;
 
@@ -120,49 +127,50 @@ void parqueos_disponiblesA(uint8_t cant)
 {
 	if(cant == 0)
 	{
-		LCD_Print("9", 270, 140, 2, 0x053d, 0xe71c);
+		LCD_Print("4", 270, 140, 2, 0x053d, 0xe71c);
 	}
 	else if (cant == 1)
 	{
-		LCD_Print("8", 270, 140, 2, 0x053d, 0xe71c);
+		LCD_Print("3", 270, 140, 2, 0x053d, 0xe71c);
 	}
 	else if (cant == 2)
 		{
-		LCD_Print("7", 270, 140, 2, 0x053d, 0xe71c);
+		LCD_Print("2", 270, 140, 2, 0x053d, 0xe71c);
 		}
 	else if (cant == 3)
 		{
-		LCD_Print("6", 270, 140, 2, 0x053d, 0xe71c);
+		LCD_Print("1", 270, 140, 2, 0x053d, 0xe71c);
 		}
 	else if (cant == 4)
 		{
-		LCD_Print("5", 270, 140, 2, 0x053d, 0xe71c);
+		LCD_Print("0", 270, 140, 2, 0x053d, 0xe71c);
 		}
-	else if (cant == 5)
-		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
-		}
-	else if (cant == 6)
-		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
-		}
-	else if (cant == 7)
-		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
-		}
-	else if (cant == 8)
-		{
-			LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
-		}
-	else if (cant == 9)
-	{
-		LCD_Print("2", 110, 110, 2, 0xF800, 0x0000);
-	}
 	//Logica de envio de datos a la LCD o Display
 }
 
 void parqueos_disponiblesB(uint8_t cant)
 {
+	if (cant == 0)
+		{
+			LCD_Print("4", 270, 177, 2, 0x053d, 0xe71c);
+		}
+	else if (cant == 1)
+		{
+			LCD_Print("3",270, 177, 2, 0x053d, 0xe71c);
+		}
+	else if (cant == 2)
+		{
+			LCD_Print("2",270, 177, 2, 0x053d, 0xe71c);
+		}
+	else if (cant == 3)
+		{
+			LCD_Print("1",270, 177, 2, 0x053d, 0xe71c);
+		}
+	else if (cant == 4)
+		{
+			LCD_Print("0",270, 177, 2, 0x053d, 0xe71c);
+		}
+
 
 }
 
@@ -244,8 +252,7 @@ int main(void)
 	char uart_buf[100];
 
 	while (1) {
-		//Logica para detección parqueo ocupado y Animación
-		// Añadir ADC
+		//Logica para detección parqueo ocupado y Animació
 
 
 	if (HAL_GetTick() - ultimo_print_uart >= 500) {
@@ -260,11 +267,12 @@ int main(void)
 
 	if (ADCVal[0]<1600)
 	{
-		if (park1 == 0)
+		if (park1A == 0)
 		{
 			uint8_t val = rand() % 6;
-			park1 = 1;
-			LCD_DibujarSpriteUniversal(13, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			park1A = 1;
+			LCD_DibujarSpriteUniversal(12, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			LCD_DibujarSpriteUniversal(14, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
@@ -274,10 +282,11 @@ int main(void)
 
 	else if (ADCVal[0]>1800)
 	{
-		if (park1 == 1)
+		if (park1A == 1)
 		{
-			park1 = 0;
+			park1A = 0;
 			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carB);
+			LCD_DibujarSpriteUniversal(14, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
@@ -290,11 +299,12 @@ int main(void)
 
 	if (ADCVal[1]<1600)
 	{
-		if (park2 == 0)
+		if (park2A == 0)
 		{
-			park2 = 1;
+			park2A = 1;
 			uint8_t val = rand() % 6;
 			LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			LCD_DibujarSpriteUniversal(65, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
@@ -304,10 +314,11 @@ int main(void)
 
 	else if (ADCVal[1]>1500)
 	{
-		if (park2 == 1)
+		if (park2A == 1)
 		{
-			park2 = 0;
+			park2A = 0;
 			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			LCD_DibujarSpriteUniversal(65, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
@@ -320,11 +331,12 @@ int main(void)
 
 	if (ADCVal[2]<1500)
 	{
-		if (park3 == 0)
+		if (park3A == 0)
 		{
 			uint8_t val = rand() % 6;
-			park3 = 1;
+			park3A = 1;
 			LCD_DibujarSpriteUniversal(109, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			LCD_DibujarSpriteUniversal(112, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
@@ -334,10 +346,11 @@ int main(void)
 
 	else if (ADCVal[2]>1500)
 	{
-		if (park3 == 1)
+		if (park3A == 1)
 		{
-			park3 = 0;
+			park3A = 0;
 			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			LCD_DibujarSpriteUniversal(112, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
@@ -352,11 +365,12 @@ int main(void)
 
 	if (ADCVal[3]<1500)
 	{
-		if (park4 == 0)
+		if (park4A == 0)
 		{
 			uint8_t val = rand() % 6;
-			park4 = 1;
+			park4A = 1;
 			LCD_DibujarSpriteUniversal(156, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
+			LCD_DibujarSpriteUniversal(160, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
@@ -366,10 +380,11 @@ int main(void)
 
 	else if (ADCVal[3]>1500)
 	{
-		if (park4 == 1)
+		if (park4A == 1)
 		{
-			park4 = 0;
+			park4A = 0;
 			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			LCD_DibujarSpriteUniversal(160, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
@@ -382,12 +397,11 @@ int main(void)
 
 	if (ADCVal[4]<1500)
 		{
-			if (park5 == 0)
+			if (park5A == 0)
 			{
-				park5 = 1;
+				park5A = 1;
 				LCD_DibujarSpriteUniversal(232, 10, 61, 80, helicop, 1, 183, parking, 320, 0xa501, he);
-				cant1++;
-				parqueos_disponiblesA(cant1);
+				LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 			}
 
 			//parqueos_disponiblesA(cant1);
@@ -395,91 +409,145 @@ int main(void)
 
 	else if (ADCVal[4]>1500)
 	{
-		if (park5 == 1)
+		if (park5A == 1)
 		{
-			park5 = 0;
+			park5A = 0;
+
 			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
-			cant1--;
-			parqueos_disponiblesA(cant1);
+			LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 		}
 
 		//parqueos_disponiblesA(cant1);
 	}
 
-		/*
-		else if(ADCVal[0]>1500)
+
+
+
+
+
+
+	if (sotB[0] == 1)
 		{
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant1++;
+			if (park1B == 0)
+			{
+				uint8_t val = rand() % 6;
+				park1B = 1;
+				LCD_DibujarSpriteUniversal(9, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(12, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
+				cant2++;
+				parqueos_disponiblesB(cant2);
+			}
+
+
+		}
+
+		else if (sotB[0] == 0)
+		{
+			if (park1B == 1)
+			{
+				park1B = 0;
+				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carB);
+				LCD_DibujarSpriteUniversal(12, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
+				cant2--;
+				parqueos_disponiblesB(cant2);
+			}
+
+		}
+
+
+
+
+
+		if (sotB[1] == 1)
+		{
+			if (park2B == 0)
+			{
+				park2B = 1;
+				uint8_t val = rand() % 6;
+				LCD_DibujarSpriteUniversal(58, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(63, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
+				cant2++;
+				parqueos_disponiblesB(cant2);
+			}
+
 			//parqueos_disponiblesA(cant1);
 		}
-		*/
 
-		/*
-		case 2:
-			//Ejecutar sprite del segundo parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant1++;
-			parqueos_disponiblesA(cant1);
-		break;
-
-		case 3:
-			//Ejecutar sprite del tercer parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant1++;
-			parqueos_disponiblesA(cant1);
-		break;
-
-		case 4:
-			//Ejecutar sprite del cuarto parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant1++;
-			parqueos_disponiblesA(cant1);
-		break;
-		*/
-		//}
-
-
-		/*
-		switch(sot2)
+		else if (sotB[1] == 0)
 		{
-		case 5:
-			//Ejecutar sprite del quinto parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant2;
-			parqueos_disponiblesB(cant2);
-		break;
+			if (park2B == 1)
+			{
+				park2B = 0;
+				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				LCD_DibujarSpriteUniversal(63, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
+				cant2--;
+				parqueos_disponiblesB(cant2);
+			}
 
-		case 6:
-			//Ejecutar sprite del sexto parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant_cars++;
-			parqueos_disponiblesB(cant2);
-		break;
-
-		case 7:
-			//Ejecutar sprite del septimo parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant2++;
-			parqueos_disponiblesB(cant2);
-		break;
-
-		case 8:
-			//Ejecutar sprite del octavo parqueo
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest);
-			cant2++;
-			parqueos_disponiblesB(cant2);
-		break;
-
-		case 9:
-			//Ejecutar sprite del helipuerto
-			LCD_DibujarSpriteUniversal(x, y, w, h, sprite_map, frame, ancho_ss, fondo_global, ancho_fondo_total, color_transparente, buffer_dest); // Sprite de helicoptero
-			cant2++;
-			parqueos_disponiblesB(cant2);
-		break;
+			//parqueos_disponiblesA(cant1);
 		}
 
-		*/
+
+
+		if (sotB[2] == 1)
+		{
+			if (park3B == 0)
+			{
+				uint8_t val = rand() % 6;
+				park3B = 1;
+				LCD_DibujarSpriteUniversal(107, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(110, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
+				cant2++;
+				parqueos_disponiblesB(cant2);
+			}
+
+			//parqueos_disponiblesA(cant1);
+		}
+
+
+		else if (sotB[2] == 0)
+		{
+			if (park3B == 1)
+			{
+				park3B = 0;
+				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				LCD_DibujarSpriteUniversal(110, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
+				cant2--;
+				parqueos_disponiblesB(cant2);
+			}
+
+			//parqueos_disponiblesA(cant1);
+		}
+
+
+		if (sotB[3] == 1)
+		{
+			if (park4B == 0)
+			{
+				uint8_t val = rand() % 6;
+				park4B = 1;
+				LCD_DibujarSpriteUniversal(155, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(158, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
+				cant2++;
+				parqueos_disponiblesB(cant2);
+			}
+
+			//parqueos_disponiblesA(cant1);
+		}
+
+		else if (sotB[3] == 0)
+		{
+			if (park4B == 1)
+			{
+				park4B = 0;
+				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				LCD_DibujarSpriteUniversal(158, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
+				cant2--;
+				parqueos_disponiblesB(cant2);
+			}
+
+			//parqueos_disponiblesA(cant1);
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
