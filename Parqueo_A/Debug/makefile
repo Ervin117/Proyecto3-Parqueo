@@ -60,8 +60,8 @@ all: main-build
 main-build: Parqueo_A.elf secondary-outputs
 
 # Tool invocations
-Parqueo_A.elf Parqueo_A.map: $(OBJS) $(USER_OBJS) C:\Users\bsmor\OneDrive\Documentos\GitHub\Proyecto3-Parqueo-\Parqueo_A\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Parqueo_A.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\bsmor\OneDrive\Documentos\GitHub\Proyecto3-Parqueo-\Parqueo_A\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Parqueo_A.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Parqueo_A.elf Parqueo_A.map: $(OBJS) $(USER_OBJS) C:\Users\razer\OneDrive\Documentos\GitHub\Proyecto3-Parqueo\Parqueo_A\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Parqueo_A.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\razer\OneDrive\Documentos\GitHub\Proyecto3-Parqueo\Parqueo_A\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Parqueo_A.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -5,16 +5,16 @@
 #include "math.h"
 
 //Numero de leds
-#define numPixels 9
+#define numPixels 5
 
 //valores de ancho de pulso del uno y el cero
 #define CCR_0 34
 #define CCR_1 67
 //colocar el timer y canal usado
-extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim1;
 //coloque el timer usado
-#define neoPixel_timer htim2
-#define neoPixel_canal TIM_CHANNEL_2
+#define neoPixel_timer htim1
+#define neoPixel_canal TIM_CHANNEL_1
 
 // funcion para aplicar el brillo con la funcion gamma
 #define GAMMA_CORRECTION 2.2f // Valor de corrección gamma adpatada al oio humano

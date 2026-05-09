@@ -35,7 +35,7 @@
 #include <stdlib.h>
 
 
-//#include "neopixel.h"
+#include "neopixel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -86,7 +86,8 @@ DMA_HandleTypeDef hdma_adc2;
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_tx;
 
-TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim1;
+DMA_HandleTypeDef hdma_tim1_ch1;
 
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
@@ -110,9 +111,9 @@ static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_UART5_Init(void);
 static void MX_ADC2_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -148,6 +149,7 @@ void parqueos_disponiblesA(uint8_t cant)
 	//Logica de envio de datos a la LCD o Display
 }
 
+
 void parqueos_disponiblesB(uint8_t cant)
 {
 	if (cant == 0)
@@ -170,8 +172,53 @@ void parqueos_disponiblesB(uint8_t cant)
 		{
 			LCD_Print("0",270, 177, 2, 0x053d, 0xe71c);
 		}
+}
 
+void borrar_sprite(int x, int y, int w, int h)
+{
+    for (int j = 0; j < h; j++)
+    {
+        for (int i = 0; i < w; i++)
+        {
+            uint16_t pixel = parking[(y + j) * 320 + (x + i)];
+            park[j * w + i] = (pixel << 8) | (pixel >> 8);
+        }
+    }
 
+    while(!dma_libre);
+    dma_libre = 0;
+    LCD_Bitmap_DMA(x, y, w, h, park);
+}
+
+void actualizar_leds(void)
+{
+    // Parqueos A
+    for (int i = 0; i < 5; i++)
+    {
+        if (ADCVal[i] < 1600) // ocupado
+        {
+            setPixelColor(i, 255, 0, 0); // ROJO
+        }
+        else
+        {
+            setPixelColor(i, 0, 255, 0); // VERDE
+        }
+    }
+/*
+    // Parqueos B (si usas sotB)
+    for (int i = 0; i < 4; i++)
+    {
+        if (sotB[i] == 1)
+        {
+            setPixelColor(i + 5, 255, 0, 0); // ROJO
+        }
+        else
+        {
+            setPixelColor(i + 5, 0, 255, 0); // VERDE
+        }
+    }
+*/
+    pixelShow();
 }
 
 /* USER CODE END 0 */
@@ -210,38 +257,25 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
-  MX_TIM2_Init();
   MX_FATFS_Init();
   MX_UART5_Init();
   MX_ADC2_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 	LCD_Init();
 	LCD_Clear(0x00);
 
-	HAL_TIM_Base_Start_IT(&htim2); // Inicia el Timer 2 con Interrupciones
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADCVal, 5);
 	LCD_Bitmap(0, 0, 320, 240, parking);
 	LCD_Print("0", 270, 140, 2, 0x053d, 0xe71c); // Numero inicial en A
 	LCD_Print("0", 270, 177, 2, 0x053d, 0xe71c); // Numero inicial en B
 
 	LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
-	/*
-	pixelClear();
-	setPixelColor(0,0,0,255); //Rojo
-	setPixelColor(1,255,255,0); //Verde
-	setPixelColor(2,0,0,255); //Rojo
-	setPixelColor(3,255,255,0); //Verde
-	setPixelColor(4,0,0,255); //Rojo
-	setPixelColor(5,255,255,0); //Verde
-	setPixelColor(6,0,0,255); //Rojo
-	setPixelColor(7,255,255,0); //Verde
-	setPixelColor(8,0,0,255); //Rojo
-	pixelShow();
-	*/
 
-	 //HAL_UART_Receive_IT(&huart2, &rxData, 1); // Disparar interrupción cuando reciba un byte
-	 //HAL_UART_Receive_IT(&huart1, &rx_data, 1); // Disparar interrupción cuando reciba un byte
-	 //HAL_UART_Receive_IT(&huart3, &rxData, 1); // Disparar interrupción cuando reciba un byte
+	pixelClear();
+	setBrightness(50); // o el valor que quieras
+	pixelShow();
 
   /* USER CODE END 2 */
 
@@ -265,6 +299,7 @@ int main(void)
 			}
 
 
+	//-------------------------Parqueo A1 animación--------------------------
 	if (ADCVal[0]<1600)
 	{
 		if (park1A == 0)
@@ -276,8 +311,6 @@ int main(void)
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
-
-
 	}
 
 	else if (ADCVal[0]>1800)
@@ -285,7 +318,7 @@ int main(void)
 		if (park1A == 1)
 		{
 			park1A = 0;
-			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carB);
+			borrar_sprite(12, 10, 41, 68);
 			LCD_DibujarSpriteUniversal(14, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
@@ -296,7 +329,7 @@ int main(void)
 
 
 
-
+	//-------------------------Parqueo A2 animación--------------------------
 	if (ADCVal[1]<1600)
 	{
 		if (park2A == 0)
@@ -308,8 +341,6 @@ int main(void)
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 	else if (ADCVal[1]>1500)
@@ -317,18 +348,16 @@ int main(void)
 		if (park2A == 1)
 		{
 			park2A = 0;
-			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			borrar_sprite(60, 10, 41, 68);
 			LCD_DibujarSpriteUniversal(65, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 
 
-
+	//-------------------------Parqueo A3 animación--------------------------
 	if (ADCVal[2]<1500)
 	{
 		if (park3A == 0)
@@ -340,8 +369,6 @@ int main(void)
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 	else if (ADCVal[2]>1500)
@@ -349,20 +376,18 @@ int main(void)
 		if (park3A == 1)
 		{
 			park3A = 0;
-			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			borrar_sprite(109, 10, 41, 68);
 			LCD_DibujarSpriteUniversal(112, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 
 
 
 
-
+	//-------------------------Parqueo A4 animación--------------------------
 	if (ADCVal[3]<1500)
 	{
 		if (park4A == 0)
@@ -374,8 +399,6 @@ int main(void)
 			cant1++;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 	else if (ADCVal[3]>1500)
@@ -383,18 +406,16 @@ int main(void)
 		if (park4A == 1)
 		{
 			park4A = 0;
-			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			borrar_sprite(156, 10, 41, 68);
 			LCD_DibujarSpriteUniversal(160, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 			cant1--;
 			parqueos_disponiblesA(cant1);
 		}
-
-		//parqueos_disponiblesA(cant1);
 	}
 
 
 
-
+	//-------------------------Parqueo Helipuerto animación--------------------------
 	if (ADCVal[4]<1500)
 		{
 			if (park5A == 0)
@@ -412,12 +433,10 @@ int main(void)
 		if (park5A == 1)
 		{
 			park5A = 0;
-
-			//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+			borrar_sprite(232, 10, 61, 80);
 			LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 		}
 
-		//parqueos_disponiblesA(cant1);
 	}
 
 
@@ -425,7 +444,7 @@ int main(void)
 
 
 
-
+	//-------------------------Parqueo B1 animación--------------------------
 	if (sotB[0] == 1)
 		{
 			if (park1B == 0)
@@ -437,8 +456,6 @@ int main(void)
 				cant2++;
 				parqueos_disponiblesB(cant2);
 			}
-
-
 		}
 
 		else if (sotB[0] == 0)
@@ -446,18 +463,18 @@ int main(void)
 			if (park1B == 1)
 			{
 				park1B = 0;
+				borrar_sprite(9, 163, 41, 68);
 				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carB);
 				LCD_DibujarSpriteUniversal(12, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 				cant2--;
 				parqueos_disponiblesB(cant2);
 			}
-
 		}
 
 
 
 
-
+	//-------------------------Parqueo B2 animación--------------------------
 		if (sotB[1] == 1)
 		{
 			if (park2B == 0)
@@ -469,8 +486,6 @@ int main(void)
 				cant2++;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
 
 		else if (sotB[1] == 0)
@@ -478,17 +493,16 @@ int main(void)
 			if (park2B == 1)
 			{
 				park2B = 0;
-				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				borrar_sprite(58, 163, 41, 68);
 				LCD_DibujarSpriteUniversal(63, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 				cant2--;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
 
 
 
+	//-------------------------Parqueo B3 animación--------------------------
 		if (sotB[2] == 1)
 		{
 			if (park3B == 0)
@@ -500,8 +514,6 @@ int main(void)
 				cant2++;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
 
 
@@ -510,16 +522,15 @@ int main(void)
 			if (park3B == 1)
 			{
 				park3B = 0;
-				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				borrar_sprite(107, 163, 41, 68);
 				LCD_DibujarSpriteUniversal(110, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 				cant2--;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
 
 
+		//-------------------------Parqueo B4 animación--------------------------
 		if (sotB[3] == 1)
 		{
 			if (park4B == 0)
@@ -531,8 +542,6 @@ int main(void)
 				cant2++;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
 
 		else if (sotB[3] == 0)
@@ -540,14 +549,14 @@ int main(void)
 			if (park4B == 1)
 			{
 				park4B = 0;
-				//LCD_DibujarSpriteUniversal(60, 10, 41, 68, carroB, 2, 246, parking, 320, 0x8410, carA);
+				borrar_sprite(155, 163, 41, 68);
 				LCD_DibujarSpriteUniversal(158, 130, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
 				cant2--;
 				parqueos_disponiblesB(cant2);
 			}
-
-			//parqueos_disponiblesA(cant1);
 		}
+
+		actualizar_leds();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -729,47 +738,77 @@ static void MX_SPI1_Init(void)
 }
 
 /**
-  * @brief TIM2 Initialization Function
+  * @brief TIM1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM2_Init(void)
+static void MX_TIM1_Init(void)
 {
 
-  /* USER CODE BEGIN TIM2_Init 0 */
+  /* USER CODE BEGIN TIM1_Init 0 */
 
-  /* USER CODE END TIM2_Init 0 */
+  /* USER CODE END TIM1_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
-  /* USER CODE BEGIN TIM2_Init 1 */
+  /* USER CODE BEGIN TIM1_Init 1 */
 
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 8399;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 99;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 0;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 105-1;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM2_Init 2 */
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
 
-  /* USER CODE END TIM2_Init 2 */
+  /* USER CODE END TIM1_Init 2 */
+  HAL_TIM_MspPostInit(&htim1);
 
 }
 
@@ -915,6 +954,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA2_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
