@@ -11,9 +11,9 @@
 #define CCR_0 34
 #define CCR_1 67
 //colocar el timer y canal usado
-extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
 //coloque el timer usado
-#define neoPixel_timer htim1
+#define neoPixel_timer htim3
 #define neoPixel_canal TIM_CHANNEL_1
 
 // funcion para aplicar el brillo con la funcion gamma

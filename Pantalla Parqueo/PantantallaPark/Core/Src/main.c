@@ -52,7 +52,6 @@ char num;
 
 uint16_t park[68*20];
 uint16_t carA[246*68];
-uint16_t carB[246*68];
 uint16_t he[183*80];
 
 uint8_t park1A = 0;
@@ -188,6 +187,7 @@ void borrar_sprite(int x, int y, int w, int h)
     while(!dma_libre);
     dma_libre = 0;
     LCD_Bitmap_DMA(x, y, w, h, park);
+
 }
 
 void actualizar_leds(void)
@@ -204,20 +204,6 @@ void actualizar_leds(void)
             setPixelColor(i, 0, 255, 0); // VERDE
         }
     }
-/*
-    // Parqueos B (si usas sotB)
-    for (int i = 0; i < 4; i++)
-    {
-        if (sotB[i] == 1)
-        {
-            setPixelColor(i + 5, 255, 0, 0); // ROJO
-        }
-        else
-        {
-            setPixelColor(i + 5, 0, 255, 0); // VERDE
-        }
-    }
-*/
     pixelShow();
 }
 
@@ -297,8 +283,6 @@ int main(void)
 
 				HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 			}
-
-
 	//-------------------------Parqueo A1 animación--------------------------
 	if (ADCVal[0]<1600)
 	{
@@ -343,7 +327,7 @@ int main(void)
 		}
 	}
 
-	else if (ADCVal[1]>1500)
+	else if (ADCVal[1]>1600)
 	{
 		if (park2A == 1)
 		{
@@ -451,7 +435,7 @@ int main(void)
 			{
 				uint8_t val = rand() % 6;
 				park1B = 1;
-				LCD_DibujarSpriteUniversal(9, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(9, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
 				LCD_DibujarSpriteUniversal(12, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 				cant2++;
 				parqueos_disponiblesB(cant2);
@@ -481,7 +465,7 @@ int main(void)
 			{
 				park2B = 1;
 				uint8_t val = rand() % 6;
-				LCD_DibujarSpriteUniversal(58, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(58, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
 				LCD_DibujarSpriteUniversal(63, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 				cant2++;
 				parqueos_disponiblesB(cant2);
@@ -509,7 +493,7 @@ int main(void)
 			{
 				uint8_t val = rand() % 6;
 				park3B = 1;
-				LCD_DibujarSpriteUniversal(107, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(107, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
 				LCD_DibujarSpriteUniversal(110, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 				cant2++;
 				parqueos_disponiblesB(cant2);
@@ -537,7 +521,7 @@ int main(void)
 			{
 				uint8_t val = rand() % 6;
 				park4B = 1;
-				LCD_DibujarSpriteUniversal(155, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(155, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
 				LCD_DibujarSpriteUniversal(158, 130, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 				cant2++;
 				parqueos_disponiblesB(cant2);

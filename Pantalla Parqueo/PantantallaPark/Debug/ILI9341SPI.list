@@ -21,31 +21,31 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   8 .data         00000080  20000000  0804a850  0004c000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          000188b8  20000080  0804a8d0  0004c080  2**2
+  9 .bss          00010608  20000080  0804a8d0  0004c080  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  20018938  0804a8d0  0004c938  2**0
+ 10 ._user_heap_stack 00000600  20010688  0804a8d0  0004c688  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0004c080  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00014faf  00000000  00000000  0004c0b0  2**0
+ 12 .debug_info   00014f9d  00000000  00000000  0004c0b0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003309  00000000  00000000  0006105f  2**0
+ 13 .debug_abbrev 00003309  00000000  00000000  0006104d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001308  00000000  00000000  00064368  2**3
+ 14 .debug_aranges 00001308  00000000  00000000  00064358  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000eb9  00000000  00000000  00065670  2**0
+ 15 .debug_rnglists 00000eb9  00000000  00000000  00065660  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0002690b  00000000  00000000  00066529  2**0
+ 16 .debug_macro  0002690f  00000000  00000000  00066519  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00018c5a  00000000  00000000  0008ce34  2**0
+ 17 .debug_line   00018c5a  00000000  00000000  0008ce28  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e6d9a  00000000  00000000  000a5a8e  2**0
+ 18 .debug_str    000e6d95  00000000  00000000  000a5a82  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0018c828  2**0
+ 19 .comment      00000043  00000000  00000000  0018c817  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005ba4  00000000  00000000  0018c86c  2**2
+ 20 .debug_frame  00005ba4  00000000  00000000  0018c85c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000008b  00000000  00000000  00192410  2**0
+ 21 .debug_line_str 0000008b  00000000  00000000  00192400  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1318,7 +1318,7 @@ static void SPI_TxByte(uint8_t data)
  8000fc6:	46bd      	mov	sp, r7
  8000fc8:	bd80      	pop	{r7, pc}
  8000fca:	bf00      	nop
- 8000fcc:	200183b8 	.word	0x200183b8
+ 8000fcc:	20010108 	.word	0x20010108
 
 08000fd0 <SPI_TxBuffer>:
 
@@ -1350,7 +1350,7 @@ static void SPI_TxBuffer(uint8_t *buffer, uint16_t len)
  8000ffa:	3708      	adds	r7, #8
  8000ffc:	46bd      	mov	sp, r7
  8000ffe:	bd80      	pop	{r7, pc}
- 8001000:	200183b8 	.word	0x200183b8
+ 8001000:	20010108 	.word	0x20010108
 
 08001004 <SPI_RxByte>:
 
@@ -1389,7 +1389,7 @@ static uint8_t SPI_RxByte(void)
  8001032:	3708      	adds	r7, #8
  8001034:	46bd      	mov	sp, r7
  8001036:	bd80      	pop	{r7, pc}
- 8001038:	200183b8 	.word	0x200183b8
+ 8001038:	20010108 	.word	0x20010108
 
 0800103c <SPI_RxBytePtr>:
 
@@ -3274,7 +3274,7 @@ void LCD_DATA(uint8_t data) {
  8001bb6:	bf00      	nop
  8001bb8:	40020400 	.word	0x40020400
  8001bbc:	40020000 	.word	0x40020000
- 8001bc0:	200183b8 	.word	0x200183b8
+ 8001bc0:	20010108 	.word	0x20010108
 
 08001bc4 <SetWindows>:
 //***************************************************************************************************************************************
@@ -3897,7 +3897,7 @@ void LCD_Bitmap_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, con
  8001fa8:	40020000 	.word	0x40020000
  8001fac:	40020400 	.word	0x40020400
  8001fb0:	20000001 	.word	0x20000001
- 8001fb4:	200183b8 	.word	0x200183b8
+ 8001fb4:	20010108 	.word	0x20010108
 
 08001fb8 <LCD_DibujarSpriteUniversal>:
 // Función para dibujar un sprite con transparencia (Versión Universal)
@@ -4374,6 +4374,7 @@ void borrar_sprite(int x, int y, int w, int h)
  800230e:	4c05      	ldr	r4, [pc, #20]	@ (8002324 <borrar_sprite+0xb4>)
  8002310:	9400      	str	r4, [sp, #0]
  8002312:	f7ff fe03 	bl	8001f1c <LCD_Bitmap_DMA>
+
 }
  8002316:	bf00      	nop
  8002318:	3724      	adds	r7, #36	@ 0x24
@@ -4443,7 +4444,7 @@ void actualizar_leds(void)
  800237a:	46bd      	mov	sp, r7
  800237c:	bd80      	pop	{r7, pc}
  800237e:	bf00      	nop
- 8002380:	20018638 	.word	0x20018638
+ 8002380:	20010388 	.word	0x20010388
 
 08002384 <main>:
 /**
@@ -4634,8 +4635,6 @@ int main(void)
  80024b0:	4879      	ldr	r0, [pc, #484]	@ (8002698 <main+0x314>)
  80024b2:	f006 f8eb 	bl	800868c <HAL_UART_Transmit>
 			}
-
-
 	//-------------------------Parqueo A1 animación--------------------------
 	if (ADCVal[0]<1600)
  80024b6:	4b71      	ldr	r3, [pc, #452]	@ (800267c <main+0x2f8>)
@@ -4795,7 +4794,7 @@ int main(void)
  80025d6:	4b36      	ldr	r3, [pc, #216]	@ (80026b0 <main+0x32c>)
  80025d8:	781b      	ldrb	r3, [r3, #0]
  80025da:	2b00      	cmp	r3, #0
- 80025dc:	f040 809f 	bne.w	800271e <main+0x39a>
+ 80025dc:	f040 809e 	bne.w	800271c <main+0x398>
 		{
 			park2A = 1;
  80025e0:	4b33      	ldr	r3, [pc, #204]	@ (80026b0 <main+0x32c>)
@@ -4867,331 +4866,331 @@ int main(void)
  800266e:	781b      	ldrb	r3, [r3, #0]
  8002670:	4618      	mov	r0, r3
  8002672:	f7ff fd2d 	bl	80020d0 <parqueos_disponiblesA>
- 8002676:	e052      	b.n	800271e <main+0x39a>
- 8002678:	20018470 	.word	0x20018470
- 800267c:	20018638 	.word	0x20018638
- 8002680:	20018310 	.word	0x20018310
+ 8002676:	e051      	b.n	800271c <main+0x398>
+ 8002678:	200101c0 	.word	0x200101c0
+ 800267c:	20010388 	.word	0x20010388
+ 8002680:	20010060 	.word	0x20010060
  8002684:	0800cccc 	.word	0x0800cccc
  8002688:	0800bc48 	.word	0x0800bc48
  800268c:	200000a4 	.word	0x200000a4
  8002690:	080324cc 	.word	0x080324cc
  8002694:	0800bc4c 	.word	0x0800bc4c
- 8002698:	200185a8 	.word	0x200185a8
- 800269c:	20018304 	.word	0x20018304
+ 8002698:	200102f8 	.word	0x200102f8
+ 800269c:	20010054 	.word	0x20010054
  80026a0:	2aaaaaab 	.word	0x2aaaaaab
  80026a4:	20000b44 	.word	0x20000b44
  80026a8:	08032f6c 	.word	0x08032f6c
  80026ac:	200000a2 	.word	0x200000a2
- 80026b0:	20018305 	.word	0x20018305
+ 80026b0:	20010055 	.word	0x20010055
 		}
 	}
 
-	else if (ADCVal[1]>1500)
+	else if (ADCVal[1]>1600)
  80026b4:	4b8c      	ldr	r3, [pc, #560]	@ (80028e8 <main+0x564>)
  80026b6:	885b      	ldrh	r3, [r3, #2]
  80026b8:	b29b      	uxth	r3, r3
- 80026ba:	f240 52dc 	movw	r2, #1500	@ 0x5dc
- 80026be:	4293      	cmp	r3, r2
- 80026c0:	d92d      	bls.n	800271e <main+0x39a>
+ 80026ba:	f5b3 6fc8 	cmp.w	r3, #1600	@ 0x640
+ 80026be:	d92d      	bls.n	800271c <main+0x398>
 	{
 		if (park2A == 1)
- 80026c2:	4b8a      	ldr	r3, [pc, #552]	@ (80028ec <main+0x568>)
- 80026c4:	781b      	ldrb	r3, [r3, #0]
- 80026c6:	2b01      	cmp	r3, #1
- 80026c8:	d129      	bne.n	800271e <main+0x39a>
+ 80026c0:	4b8a      	ldr	r3, [pc, #552]	@ (80028ec <main+0x568>)
+ 80026c2:	781b      	ldrb	r3, [r3, #0]
+ 80026c4:	2b01      	cmp	r3, #1
+ 80026c6:	d129      	bne.n	800271c <main+0x398>
 		{
 			park2A = 0;
- 80026ca:	4b88      	ldr	r3, [pc, #544]	@ (80028ec <main+0x568>)
- 80026cc:	2200      	movs	r2, #0
- 80026ce:	701a      	strb	r2, [r3, #0]
+ 80026c8:	4b88      	ldr	r3, [pc, #544]	@ (80028ec <main+0x568>)
+ 80026ca:	2200      	movs	r2, #0
+ 80026cc:	701a      	strb	r2, [r3, #0]
 			borrar_sprite(60, 10, 41, 68);
- 80026d0:	2344      	movs	r3, #68	@ 0x44
- 80026d2:	2229      	movs	r2, #41	@ 0x29
- 80026d4:	210a      	movs	r1, #10
- 80026d6:	203c      	movs	r0, #60	@ 0x3c
- 80026d8:	f7ff fdca 	bl	8002270 <borrar_sprite>
+ 80026ce:	2344      	movs	r3, #68	@ 0x44
+ 80026d0:	2229      	movs	r2, #41	@ 0x29
+ 80026d2:	210a      	movs	r1, #10
+ 80026d4:	203c      	movs	r0, #60	@ 0x3c
+ 80026d6:	f7ff fdcb 	bl	8002270 <borrar_sprite>
 			LCD_DibujarSpriteUniversal(65, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
- 80026dc:	4b84      	ldr	r3, [pc, #528]	@ (80028f0 <main+0x56c>)
- 80026de:	9306      	str	r3, [sp, #24]
- 80026e0:	f24e 731c 	movw	r3, #59164	@ 0xe71c
- 80026e4:	9305      	str	r3, [sp, #20]
- 80026e6:	f44f 73a0 	mov.w	r3, #320	@ 0x140
- 80026ea:	9304      	str	r3, [sp, #16]
- 80026ec:	4b81      	ldr	r3, [pc, #516]	@ (80028f4 <main+0x570>)
- 80026ee:	9303      	str	r3, [sp, #12]
- 80026f0:	2344      	movs	r3, #68	@ 0x44
- 80026f2:	9302      	str	r3, [sp, #8]
- 80026f4:	2301      	movs	r3, #1
- 80026f6:	9301      	str	r3, [sp, #4]
- 80026f8:	4b7f      	ldr	r3, [pc, #508]	@ (80028f8 <main+0x574>)
- 80026fa:	9300      	str	r3, [sp, #0]
- 80026fc:	2314      	movs	r3, #20
- 80026fe:	2222      	movs	r2, #34	@ 0x22
- 8002700:	215a      	movs	r1, #90	@ 0x5a
- 8002702:	2041      	movs	r0, #65	@ 0x41
- 8002704:	f7ff fc58 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 80026da:	4b85      	ldr	r3, [pc, #532]	@ (80028f0 <main+0x56c>)
+ 80026dc:	9306      	str	r3, [sp, #24]
+ 80026de:	f24e 731c 	movw	r3, #59164	@ 0xe71c
+ 80026e2:	9305      	str	r3, [sp, #20]
+ 80026e4:	f44f 73a0 	mov.w	r3, #320	@ 0x140
+ 80026e8:	9304      	str	r3, [sp, #16]
+ 80026ea:	4b82      	ldr	r3, [pc, #520]	@ (80028f4 <main+0x570>)
+ 80026ec:	9303      	str	r3, [sp, #12]
+ 80026ee:	2344      	movs	r3, #68	@ 0x44
+ 80026f0:	9302      	str	r3, [sp, #8]
+ 80026f2:	2301      	movs	r3, #1
+ 80026f4:	9301      	str	r3, [sp, #4]
+ 80026f6:	4b80      	ldr	r3, [pc, #512]	@ (80028f8 <main+0x574>)
+ 80026f8:	9300      	str	r3, [sp, #0]
+ 80026fa:	2314      	movs	r3, #20
+ 80026fc:	2222      	movs	r2, #34	@ 0x22
+ 80026fe:	215a      	movs	r1, #90	@ 0x5a
+ 8002700:	2041      	movs	r0, #65	@ 0x41
+ 8002702:	f7ff fc59 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			cant1--;
- 8002708:	4b7c      	ldr	r3, [pc, #496]	@ (80028fc <main+0x578>)
- 800270a:	781b      	ldrb	r3, [r3, #0]
- 800270c:	3b01      	subs	r3, #1
- 800270e:	b2da      	uxtb	r2, r3
- 8002710:	4b7a      	ldr	r3, [pc, #488]	@ (80028fc <main+0x578>)
- 8002712:	701a      	strb	r2, [r3, #0]
+ 8002706:	4b7d      	ldr	r3, [pc, #500]	@ (80028fc <main+0x578>)
+ 8002708:	781b      	ldrb	r3, [r3, #0]
+ 800270a:	3b01      	subs	r3, #1
+ 800270c:	b2da      	uxtb	r2, r3
+ 800270e:	4b7b      	ldr	r3, [pc, #492]	@ (80028fc <main+0x578>)
+ 8002710:	701a      	strb	r2, [r3, #0]
 			parqueos_disponiblesA(cant1);
- 8002714:	4b79      	ldr	r3, [pc, #484]	@ (80028fc <main+0x578>)
- 8002716:	781b      	ldrb	r3, [r3, #0]
- 8002718:	4618      	mov	r0, r3
- 800271a:	f7ff fcd9 	bl	80020d0 <parqueos_disponiblesA>
+ 8002712:	4b7a      	ldr	r3, [pc, #488]	@ (80028fc <main+0x578>)
+ 8002714:	781b      	ldrb	r3, [r3, #0]
+ 8002716:	4618      	mov	r0, r3
+ 8002718:	f7ff fcda 	bl	80020d0 <parqueos_disponiblesA>
 	}
 
 
 
 	//-------------------------Parqueo A3 animación--------------------------
 	if (ADCVal[2]<1500)
- 800271e:	4b72      	ldr	r3, [pc, #456]	@ (80028e8 <main+0x564>)
- 8002720:	889b      	ldrh	r3, [r3, #4]
- 8002722:	b29b      	uxth	r3, r3
- 8002724:	f240 52db 	movw	r2, #1499	@ 0x5db
- 8002728:	4293      	cmp	r3, r2
- 800272a:	d850      	bhi.n	80027ce <main+0x44a>
+ 800271c:	4b72      	ldr	r3, [pc, #456]	@ (80028e8 <main+0x564>)
+ 800271e:	889b      	ldrh	r3, [r3, #4]
+ 8002720:	b29b      	uxth	r3, r3
+ 8002722:	f240 52db 	movw	r2, #1499	@ 0x5db
+ 8002726:	4293      	cmp	r3, r2
+ 8002728:	d850      	bhi.n	80027cc <main+0x448>
 	{
 		if (park3A == 0)
- 800272c:	4b74      	ldr	r3, [pc, #464]	@ (8002900 <main+0x57c>)
- 800272e:	781b      	ldrb	r3, [r3, #0]
- 8002730:	2b00      	cmp	r3, #0
- 8002732:	f040 8081 	bne.w	8002838 <main+0x4b4>
+ 800272a:	4b75      	ldr	r3, [pc, #468]	@ (8002900 <main+0x57c>)
+ 800272c:	781b      	ldrb	r3, [r3, #0]
+ 800272e:	2b00      	cmp	r3, #0
+ 8002730:	f040 8081 	bne.w	8002836 <main+0x4b2>
 		{
 			uint8_t val = rand() % 6;
- 8002736:	f007 f835 	bl	80097a4 <rand>
- 800273a:	4602      	mov	r2, r0
- 800273c:	4b71      	ldr	r3, [pc, #452]	@ (8002904 <main+0x580>)
- 800273e:	fb83 3102 	smull	r3, r1, r3, r2
- 8002742:	17d3      	asrs	r3, r2, #31
- 8002744:	1ac9      	subs	r1, r1, r3
- 8002746:	460b      	mov	r3, r1
- 8002748:	005b      	lsls	r3, r3, #1
- 800274a:	440b      	add	r3, r1
- 800274c:	005b      	lsls	r3, r3, #1
- 800274e:	1ad1      	subs	r1, r2, r3
- 8002750:	460b      	mov	r3, r1
- 8002752:	f887 3069 	strb.w	r3, [r7, #105]	@ 0x69
+ 8002734:	f007 f836 	bl	80097a4 <rand>
+ 8002738:	4602      	mov	r2, r0
+ 800273a:	4b72      	ldr	r3, [pc, #456]	@ (8002904 <main+0x580>)
+ 800273c:	fb83 3102 	smull	r3, r1, r3, r2
+ 8002740:	17d3      	asrs	r3, r2, #31
+ 8002742:	1ac9      	subs	r1, r1, r3
+ 8002744:	460b      	mov	r3, r1
+ 8002746:	005b      	lsls	r3, r3, #1
+ 8002748:	440b      	add	r3, r1
+ 800274a:	005b      	lsls	r3, r3, #1
+ 800274c:	1ad1      	subs	r1, r2, r3
+ 800274e:	460b      	mov	r3, r1
+ 8002750:	f887 3069 	strb.w	r3, [r7, #105]	@ 0x69
 			park3A = 1;
- 8002756:	4b6a      	ldr	r3, [pc, #424]	@ (8002900 <main+0x57c>)
- 8002758:	2201      	movs	r2, #1
- 800275a:	701a      	strb	r2, [r3, #0]
+ 8002754:	4b6a      	ldr	r3, [pc, #424]	@ (8002900 <main+0x57c>)
+ 8002756:	2201      	movs	r2, #1
+ 8002758:	701a      	strb	r2, [r3, #0]
 			LCD_DibujarSpriteUniversal(109, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
- 800275c:	f897 3069 	ldrb.w	r3, [r7, #105]	@ 0x69
- 8002760:	4a69      	ldr	r2, [pc, #420]	@ (8002908 <main+0x584>)
- 8002762:	9206      	str	r2, [sp, #24]
- 8002764:	f24a 5201 	movw	r2, #42241	@ 0xa501
- 8002768:	9205      	str	r2, [sp, #20]
- 800276a:	f44f 72a0 	mov.w	r2, #320	@ 0x140
- 800276e:	9204      	str	r2, [sp, #16]
- 8002770:	4a60      	ldr	r2, [pc, #384]	@ (80028f4 <main+0x570>)
- 8002772:	9203      	str	r2, [sp, #12]
- 8002774:	22f6      	movs	r2, #246	@ 0xf6
- 8002776:	9202      	str	r2, [sp, #8]
- 8002778:	9301      	str	r3, [sp, #4]
- 800277a:	4b64      	ldr	r3, [pc, #400]	@ (800290c <main+0x588>)
- 800277c:	9300      	str	r3, [sp, #0]
- 800277e:	2344      	movs	r3, #68	@ 0x44
- 8002780:	2229      	movs	r2, #41	@ 0x29
- 8002782:	210a      	movs	r1, #10
- 8002784:	206d      	movs	r0, #109	@ 0x6d
- 8002786:	f7ff fc17 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 800275a:	f897 3069 	ldrb.w	r3, [r7, #105]	@ 0x69
+ 800275e:	4a6a      	ldr	r2, [pc, #424]	@ (8002908 <main+0x584>)
+ 8002760:	9206      	str	r2, [sp, #24]
+ 8002762:	f24a 5201 	movw	r2, #42241	@ 0xa501
+ 8002766:	9205      	str	r2, [sp, #20]
+ 8002768:	f44f 72a0 	mov.w	r2, #320	@ 0x140
+ 800276c:	9204      	str	r2, [sp, #16]
+ 800276e:	4a61      	ldr	r2, [pc, #388]	@ (80028f4 <main+0x570>)
+ 8002770:	9203      	str	r2, [sp, #12]
+ 8002772:	22f6      	movs	r2, #246	@ 0xf6
+ 8002774:	9202      	str	r2, [sp, #8]
+ 8002776:	9301      	str	r3, [sp, #4]
+ 8002778:	4b64      	ldr	r3, [pc, #400]	@ (800290c <main+0x588>)
+ 800277a:	9300      	str	r3, [sp, #0]
+ 800277c:	2344      	movs	r3, #68	@ 0x44
+ 800277e:	2229      	movs	r2, #41	@ 0x29
+ 8002780:	210a      	movs	r1, #10
+ 8002782:	206d      	movs	r0, #109	@ 0x6d
+ 8002784:	f7ff fc18 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			LCD_DibujarSpriteUniversal(112, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
- 800278a:	4b59      	ldr	r3, [pc, #356]	@ (80028f0 <main+0x56c>)
- 800278c:	9306      	str	r3, [sp, #24]
- 800278e:	f24e 731c 	movw	r3, #59164	@ 0xe71c
- 8002792:	9305      	str	r3, [sp, #20]
- 8002794:	f44f 73a0 	mov.w	r3, #320	@ 0x140
- 8002798:	9304      	str	r3, [sp, #16]
- 800279a:	4b56      	ldr	r3, [pc, #344]	@ (80028f4 <main+0x570>)
- 800279c:	9303      	str	r3, [sp, #12]
- 800279e:	2344      	movs	r3, #68	@ 0x44
- 80027a0:	9302      	str	r3, [sp, #8]
- 80027a2:	2300      	movs	r3, #0
- 80027a4:	9301      	str	r3, [sp, #4]
- 80027a6:	4b54      	ldr	r3, [pc, #336]	@ (80028f8 <main+0x574>)
- 80027a8:	9300      	str	r3, [sp, #0]
- 80027aa:	2314      	movs	r3, #20
- 80027ac:	2222      	movs	r2, #34	@ 0x22
- 80027ae:	215a      	movs	r1, #90	@ 0x5a
- 80027b0:	2070      	movs	r0, #112	@ 0x70
- 80027b2:	f7ff fc01 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 8002788:	4b59      	ldr	r3, [pc, #356]	@ (80028f0 <main+0x56c>)
+ 800278a:	9306      	str	r3, [sp, #24]
+ 800278c:	f24e 731c 	movw	r3, #59164	@ 0xe71c
+ 8002790:	9305      	str	r3, [sp, #20]
+ 8002792:	f44f 73a0 	mov.w	r3, #320	@ 0x140
+ 8002796:	9304      	str	r3, [sp, #16]
+ 8002798:	4b56      	ldr	r3, [pc, #344]	@ (80028f4 <main+0x570>)
+ 800279a:	9303      	str	r3, [sp, #12]
+ 800279c:	2344      	movs	r3, #68	@ 0x44
+ 800279e:	9302      	str	r3, [sp, #8]
+ 80027a0:	2300      	movs	r3, #0
+ 80027a2:	9301      	str	r3, [sp, #4]
+ 80027a4:	4b54      	ldr	r3, [pc, #336]	@ (80028f8 <main+0x574>)
+ 80027a6:	9300      	str	r3, [sp, #0]
+ 80027a8:	2314      	movs	r3, #20
+ 80027aa:	2222      	movs	r2, #34	@ 0x22
+ 80027ac:	215a      	movs	r1, #90	@ 0x5a
+ 80027ae:	2070      	movs	r0, #112	@ 0x70
+ 80027b0:	f7ff fc02 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			cant1++;
- 80027b6:	4b51      	ldr	r3, [pc, #324]	@ (80028fc <main+0x578>)
- 80027b8:	781b      	ldrb	r3, [r3, #0]
- 80027ba:	3301      	adds	r3, #1
- 80027bc:	b2da      	uxtb	r2, r3
- 80027be:	4b4f      	ldr	r3, [pc, #316]	@ (80028fc <main+0x578>)
- 80027c0:	701a      	strb	r2, [r3, #0]
+ 80027b4:	4b51      	ldr	r3, [pc, #324]	@ (80028fc <main+0x578>)
+ 80027b6:	781b      	ldrb	r3, [r3, #0]
+ 80027b8:	3301      	adds	r3, #1
+ 80027ba:	b2da      	uxtb	r2, r3
+ 80027bc:	4b4f      	ldr	r3, [pc, #316]	@ (80028fc <main+0x578>)
+ 80027be:	701a      	strb	r2, [r3, #0]
 			parqueos_disponiblesA(cant1);
- 80027c2:	4b4e      	ldr	r3, [pc, #312]	@ (80028fc <main+0x578>)
- 80027c4:	781b      	ldrb	r3, [r3, #0]
- 80027c6:	4618      	mov	r0, r3
- 80027c8:	f7ff fc82 	bl	80020d0 <parqueos_disponiblesA>
- 80027cc:	e034      	b.n	8002838 <main+0x4b4>
+ 80027c0:	4b4e      	ldr	r3, [pc, #312]	@ (80028fc <main+0x578>)
+ 80027c2:	781b      	ldrb	r3, [r3, #0]
+ 80027c4:	4618      	mov	r0, r3
+ 80027c6:	f7ff fc83 	bl	80020d0 <parqueos_disponiblesA>
+ 80027ca:	e034      	b.n	8002836 <main+0x4b2>
 		}
 	}
 
 	else if (ADCVal[2]>1500)
- 80027ce:	4b46      	ldr	r3, [pc, #280]	@ (80028e8 <main+0x564>)
- 80027d0:	889b      	ldrh	r3, [r3, #4]
- 80027d2:	b29b      	uxth	r3, r3
- 80027d4:	f240 52dc 	movw	r2, #1500	@ 0x5dc
- 80027d8:	4293      	cmp	r3, r2
- 80027da:	d92d      	bls.n	8002838 <main+0x4b4>
+ 80027cc:	4b46      	ldr	r3, [pc, #280]	@ (80028e8 <main+0x564>)
+ 80027ce:	889b      	ldrh	r3, [r3, #4]
+ 80027d0:	b29b      	uxth	r3, r3
+ 80027d2:	f240 52dc 	movw	r2, #1500	@ 0x5dc
+ 80027d6:	4293      	cmp	r3, r2
+ 80027d8:	d92d      	bls.n	8002836 <main+0x4b2>
 	{
 		if (park3A == 1)
- 80027dc:	4b48      	ldr	r3, [pc, #288]	@ (8002900 <main+0x57c>)
- 80027de:	781b      	ldrb	r3, [r3, #0]
- 80027e0:	2b01      	cmp	r3, #1
- 80027e2:	d129      	bne.n	8002838 <main+0x4b4>
+ 80027da:	4b49      	ldr	r3, [pc, #292]	@ (8002900 <main+0x57c>)
+ 80027dc:	781b      	ldrb	r3, [r3, #0]
+ 80027de:	2b01      	cmp	r3, #1
+ 80027e0:	d129      	bne.n	8002836 <main+0x4b2>
 		{
 			park3A = 0;
- 80027e4:	4b46      	ldr	r3, [pc, #280]	@ (8002900 <main+0x57c>)
- 80027e6:	2200      	movs	r2, #0
- 80027e8:	701a      	strb	r2, [r3, #0]
+ 80027e2:	4b47      	ldr	r3, [pc, #284]	@ (8002900 <main+0x57c>)
+ 80027e4:	2200      	movs	r2, #0
+ 80027e6:	701a      	strb	r2, [r3, #0]
 			borrar_sprite(109, 10, 41, 68);
- 80027ea:	2344      	movs	r3, #68	@ 0x44
- 80027ec:	2229      	movs	r2, #41	@ 0x29
- 80027ee:	210a      	movs	r1, #10
- 80027f0:	206d      	movs	r0, #109	@ 0x6d
- 80027f2:	f7ff fd3d 	bl	8002270 <borrar_sprite>
+ 80027e8:	2344      	movs	r3, #68	@ 0x44
+ 80027ea:	2229      	movs	r2, #41	@ 0x29
+ 80027ec:	210a      	movs	r1, #10
+ 80027ee:	206d      	movs	r0, #109	@ 0x6d
+ 80027f0:	f7ff fd3e 	bl	8002270 <borrar_sprite>
 			LCD_DibujarSpriteUniversal(112, 90, 34, 20, semaforo, 1, 68, parking, 320, 0xe71c, park);
- 80027f6:	4b3e      	ldr	r3, [pc, #248]	@ (80028f0 <main+0x56c>)
- 80027f8:	9306      	str	r3, [sp, #24]
- 80027fa:	f24e 731c 	movw	r3, #59164	@ 0xe71c
- 80027fe:	9305      	str	r3, [sp, #20]
- 8002800:	f44f 73a0 	mov.w	r3, #320	@ 0x140
- 8002804:	9304      	str	r3, [sp, #16]
- 8002806:	4b3b      	ldr	r3, [pc, #236]	@ (80028f4 <main+0x570>)
- 8002808:	9303      	str	r3, [sp, #12]
- 800280a:	2344      	movs	r3, #68	@ 0x44
- 800280c:	9302      	str	r3, [sp, #8]
- 800280e:	2301      	movs	r3, #1
- 8002810:	9301      	str	r3, [sp, #4]
- 8002812:	4b39      	ldr	r3, [pc, #228]	@ (80028f8 <main+0x574>)
- 8002814:	9300      	str	r3, [sp, #0]
- 8002816:	2314      	movs	r3, #20
- 8002818:	2222      	movs	r2, #34	@ 0x22
- 800281a:	215a      	movs	r1, #90	@ 0x5a
- 800281c:	2070      	movs	r0, #112	@ 0x70
- 800281e:	f7ff fbcb 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 80027f4:	4b3e      	ldr	r3, [pc, #248]	@ (80028f0 <main+0x56c>)
+ 80027f6:	9306      	str	r3, [sp, #24]
+ 80027f8:	f24e 731c 	movw	r3, #59164	@ 0xe71c
+ 80027fc:	9305      	str	r3, [sp, #20]
+ 80027fe:	f44f 73a0 	mov.w	r3, #320	@ 0x140
+ 8002802:	9304      	str	r3, [sp, #16]
+ 8002804:	4b3b      	ldr	r3, [pc, #236]	@ (80028f4 <main+0x570>)
+ 8002806:	9303      	str	r3, [sp, #12]
+ 8002808:	2344      	movs	r3, #68	@ 0x44
+ 800280a:	9302      	str	r3, [sp, #8]
+ 800280c:	2301      	movs	r3, #1
+ 800280e:	9301      	str	r3, [sp, #4]
+ 8002810:	4b39      	ldr	r3, [pc, #228]	@ (80028f8 <main+0x574>)
+ 8002812:	9300      	str	r3, [sp, #0]
+ 8002814:	2314      	movs	r3, #20
+ 8002816:	2222      	movs	r2, #34	@ 0x22
+ 8002818:	215a      	movs	r1, #90	@ 0x5a
+ 800281a:	2070      	movs	r0, #112	@ 0x70
+ 800281c:	f7ff fbcc 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			cant1--;
- 8002822:	4b36      	ldr	r3, [pc, #216]	@ (80028fc <main+0x578>)
- 8002824:	781b      	ldrb	r3, [r3, #0]
- 8002826:	3b01      	subs	r3, #1
- 8002828:	b2da      	uxtb	r2, r3
- 800282a:	4b34      	ldr	r3, [pc, #208]	@ (80028fc <main+0x578>)
- 800282c:	701a      	strb	r2, [r3, #0]
+ 8002820:	4b36      	ldr	r3, [pc, #216]	@ (80028fc <main+0x578>)
+ 8002822:	781b      	ldrb	r3, [r3, #0]
+ 8002824:	3b01      	subs	r3, #1
+ 8002826:	b2da      	uxtb	r2, r3
+ 8002828:	4b34      	ldr	r3, [pc, #208]	@ (80028fc <main+0x578>)
+ 800282a:	701a      	strb	r2, [r3, #0]
 			parqueos_disponiblesA(cant1);
- 800282e:	4b33      	ldr	r3, [pc, #204]	@ (80028fc <main+0x578>)
- 8002830:	781b      	ldrb	r3, [r3, #0]
- 8002832:	4618      	mov	r0, r3
- 8002834:	f7ff fc4c 	bl	80020d0 <parqueos_disponiblesA>
+ 800282c:	4b33      	ldr	r3, [pc, #204]	@ (80028fc <main+0x578>)
+ 800282e:	781b      	ldrb	r3, [r3, #0]
+ 8002830:	4618      	mov	r0, r3
+ 8002832:	f7ff fc4d 	bl	80020d0 <parqueos_disponiblesA>
 
 
 
 
 	//-------------------------Parqueo A4 animación--------------------------
 	if (ADCVal[3]<1500)
- 8002838:	4b2b      	ldr	r3, [pc, #172]	@ (80028e8 <main+0x564>)
- 800283a:	88db      	ldrh	r3, [r3, #6]
- 800283c:	b29b      	uxth	r3, r3
- 800283e:	f240 52db 	movw	r2, #1499	@ 0x5db
- 8002842:	4293      	cmp	r3, r2
- 8002844:	d866      	bhi.n	8002914 <main+0x590>
+ 8002836:	4b2c      	ldr	r3, [pc, #176]	@ (80028e8 <main+0x564>)
+ 8002838:	88db      	ldrh	r3, [r3, #6]
+ 800283a:	b29b      	uxth	r3, r3
+ 800283c:	f240 52db 	movw	r2, #1499	@ 0x5db
+ 8002840:	4293      	cmp	r3, r2
+ 8002842:	d867      	bhi.n	8002914 <main+0x590>
 	{
 		if (park4A == 0)
- 8002846:	4b32      	ldr	r3, [pc, #200]	@ (8002910 <main+0x58c>)
- 8002848:	781b      	ldrb	r3, [r3, #0]
- 800284a:	2b00      	cmp	r3, #0
- 800284c:	f040 8097 	bne.w	800297e <main+0x5fa>
+ 8002844:	4b32      	ldr	r3, [pc, #200]	@ (8002910 <main+0x58c>)
+ 8002846:	781b      	ldrb	r3, [r3, #0]
+ 8002848:	2b00      	cmp	r3, #0
+ 800284a:	f040 8098 	bne.w	800297e <main+0x5fa>
 		{
 			uint8_t val = rand() % 6;
- 8002850:	f006 ffa8 	bl	80097a4 <rand>
- 8002854:	4602      	mov	r2, r0
- 8002856:	4b2b      	ldr	r3, [pc, #172]	@ (8002904 <main+0x580>)
- 8002858:	fb83 3102 	smull	r3, r1, r3, r2
- 800285c:	17d3      	asrs	r3, r2, #31
- 800285e:	1ac9      	subs	r1, r1, r3
- 8002860:	460b      	mov	r3, r1
- 8002862:	005b      	lsls	r3, r3, #1
- 8002864:	440b      	add	r3, r1
- 8002866:	005b      	lsls	r3, r3, #1
- 8002868:	1ad1      	subs	r1, r2, r3
- 800286a:	460b      	mov	r3, r1
- 800286c:	f887 3068 	strb.w	r3, [r7, #104]	@ 0x68
+ 800284e:	f006 ffa9 	bl	80097a4 <rand>
+ 8002852:	4602      	mov	r2, r0
+ 8002854:	4b2b      	ldr	r3, [pc, #172]	@ (8002904 <main+0x580>)
+ 8002856:	fb83 3102 	smull	r3, r1, r3, r2
+ 800285a:	17d3      	asrs	r3, r2, #31
+ 800285c:	1ac9      	subs	r1, r1, r3
+ 800285e:	460b      	mov	r3, r1
+ 8002860:	005b      	lsls	r3, r3, #1
+ 8002862:	440b      	add	r3, r1
+ 8002864:	005b      	lsls	r3, r3, #1
+ 8002866:	1ad1      	subs	r1, r2, r3
+ 8002868:	460b      	mov	r3, r1
+ 800286a:	f887 3068 	strb.w	r3, [r7, #104]	@ 0x68
 			park4A = 1;
- 8002870:	4b27      	ldr	r3, [pc, #156]	@ (8002910 <main+0x58c>)
- 8002872:	2201      	movs	r2, #1
- 8002874:	701a      	strb	r2, [r3, #0]
+ 800286e:	4b28      	ldr	r3, [pc, #160]	@ (8002910 <main+0x58c>)
+ 8002870:	2201      	movs	r2, #1
+ 8002872:	701a      	strb	r2, [r3, #0]
 			LCD_DibujarSpriteUniversal(156, 10, 41, 68, carroA, val, 246, parking, 320, 0xa501, carA);
- 8002876:	f897 3068 	ldrb.w	r3, [r7, #104]	@ 0x68
- 800287a:	4a23      	ldr	r2, [pc, #140]	@ (8002908 <main+0x584>)
- 800287c:	9206      	str	r2, [sp, #24]
- 800287e:	f24a 5201 	movw	r2, #42241	@ 0xa501
- 8002882:	9205      	str	r2, [sp, #20]
- 8002884:	f44f 72a0 	mov.w	r2, #320	@ 0x140
- 8002888:	9204      	str	r2, [sp, #16]
- 800288a:	4a1a      	ldr	r2, [pc, #104]	@ (80028f4 <main+0x570>)
- 800288c:	9203      	str	r2, [sp, #12]
- 800288e:	22f6      	movs	r2, #246	@ 0xf6
- 8002890:	9202      	str	r2, [sp, #8]
- 8002892:	9301      	str	r3, [sp, #4]
- 8002894:	4b1d      	ldr	r3, [pc, #116]	@ (800290c <main+0x588>)
- 8002896:	9300      	str	r3, [sp, #0]
- 8002898:	2344      	movs	r3, #68	@ 0x44
- 800289a:	2229      	movs	r2, #41	@ 0x29
- 800289c:	210a      	movs	r1, #10
- 800289e:	209c      	movs	r0, #156	@ 0x9c
- 80028a0:	f7ff fb8a 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 8002874:	f897 3068 	ldrb.w	r3, [r7, #104]	@ 0x68
+ 8002878:	4a23      	ldr	r2, [pc, #140]	@ (8002908 <main+0x584>)
+ 800287a:	9206      	str	r2, [sp, #24]
+ 800287c:	f24a 5201 	movw	r2, #42241	@ 0xa501
+ 8002880:	9205      	str	r2, [sp, #20]
+ 8002882:	f44f 72a0 	mov.w	r2, #320	@ 0x140
+ 8002886:	9204      	str	r2, [sp, #16]
+ 8002888:	4a1a      	ldr	r2, [pc, #104]	@ (80028f4 <main+0x570>)
+ 800288a:	9203      	str	r2, [sp, #12]
+ 800288c:	22f6      	movs	r2, #246	@ 0xf6
+ 800288e:	9202      	str	r2, [sp, #8]
+ 8002890:	9301      	str	r3, [sp, #4]
+ 8002892:	4b1e      	ldr	r3, [pc, #120]	@ (800290c <main+0x588>)
+ 8002894:	9300      	str	r3, [sp, #0]
+ 8002896:	2344      	movs	r3, #68	@ 0x44
+ 8002898:	2229      	movs	r2, #41	@ 0x29
+ 800289a:	210a      	movs	r1, #10
+ 800289c:	209c      	movs	r0, #156	@ 0x9c
+ 800289e:	f7ff fb8b 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			LCD_DibujarSpriteUniversal(160, 90, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
- 80028a4:	4b12      	ldr	r3, [pc, #72]	@ (80028f0 <main+0x56c>)
- 80028a6:	9306      	str	r3, [sp, #24]
- 80028a8:	f24e 731c 	movw	r3, #59164	@ 0xe71c
- 80028ac:	9305      	str	r3, [sp, #20]
- 80028ae:	f44f 73a0 	mov.w	r3, #320	@ 0x140
- 80028b2:	9304      	str	r3, [sp, #16]
- 80028b4:	4b0f      	ldr	r3, [pc, #60]	@ (80028f4 <main+0x570>)
- 80028b6:	9303      	str	r3, [sp, #12]
- 80028b8:	2344      	movs	r3, #68	@ 0x44
- 80028ba:	9302      	str	r3, [sp, #8]
- 80028bc:	2300      	movs	r3, #0
- 80028be:	9301      	str	r3, [sp, #4]
- 80028c0:	4b0d      	ldr	r3, [pc, #52]	@ (80028f8 <main+0x574>)
- 80028c2:	9300      	str	r3, [sp, #0]
- 80028c4:	2314      	movs	r3, #20
- 80028c6:	2222      	movs	r2, #34	@ 0x22
- 80028c8:	215a      	movs	r1, #90	@ 0x5a
- 80028ca:	20a0      	movs	r0, #160	@ 0xa0
- 80028cc:	f7ff fb74 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
+ 80028a2:	4b13      	ldr	r3, [pc, #76]	@ (80028f0 <main+0x56c>)
+ 80028a4:	9306      	str	r3, [sp, #24]
+ 80028a6:	f24e 731c 	movw	r3, #59164	@ 0xe71c
+ 80028aa:	9305      	str	r3, [sp, #20]
+ 80028ac:	f44f 73a0 	mov.w	r3, #320	@ 0x140
+ 80028b0:	9304      	str	r3, [sp, #16]
+ 80028b2:	4b10      	ldr	r3, [pc, #64]	@ (80028f4 <main+0x570>)
+ 80028b4:	9303      	str	r3, [sp, #12]
+ 80028b6:	2344      	movs	r3, #68	@ 0x44
+ 80028b8:	9302      	str	r3, [sp, #8]
+ 80028ba:	2300      	movs	r3, #0
+ 80028bc:	9301      	str	r3, [sp, #4]
+ 80028be:	4b0e      	ldr	r3, [pc, #56]	@ (80028f8 <main+0x574>)
+ 80028c0:	9300      	str	r3, [sp, #0]
+ 80028c2:	2314      	movs	r3, #20
+ 80028c4:	2222      	movs	r2, #34	@ 0x22
+ 80028c6:	215a      	movs	r1, #90	@ 0x5a
+ 80028c8:	20a0      	movs	r0, #160	@ 0xa0
+ 80028ca:	f7ff fb75 	bl	8001fb8 <LCD_DibujarSpriteUniversal>
 			cant1++;
- 80028d0:	4b0a      	ldr	r3, [pc, #40]	@ (80028fc <main+0x578>)
- 80028d2:	781b      	ldrb	r3, [r3, #0]
- 80028d4:	3301      	adds	r3, #1
- 80028d6:	b2da      	uxtb	r2, r3
- 80028d8:	4b08      	ldr	r3, [pc, #32]	@ (80028fc <main+0x578>)
- 80028da:	701a      	strb	r2, [r3, #0]
+ 80028ce:	4b0b      	ldr	r3, [pc, #44]	@ (80028fc <main+0x578>)
+ 80028d0:	781b      	ldrb	r3, [r3, #0]
+ 80028d2:	3301      	adds	r3, #1
+ 80028d4:	b2da      	uxtb	r2, r3
+ 80028d6:	4b09      	ldr	r3, [pc, #36]	@ (80028fc <main+0x578>)
+ 80028d8:	701a      	strb	r2, [r3, #0]
 			parqueos_disponiblesA(cant1);
- 80028dc:	4b07      	ldr	r3, [pc, #28]	@ (80028fc <main+0x578>)
- 80028de:	781b      	ldrb	r3, [r3, #0]
- 80028e0:	4618      	mov	r0, r3
- 80028e2:	f7ff fbf5 	bl	80020d0 <parqueos_disponiblesA>
- 80028e6:	e04a      	b.n	800297e <main+0x5fa>
- 80028e8:	20018638 	.word	0x20018638
- 80028ec:	20018305 	.word	0x20018305
+ 80028da:	4b08      	ldr	r3, [pc, #32]	@ (80028fc <main+0x578>)
+ 80028dc:	781b      	ldrb	r3, [r3, #0]
+ 80028de:	4618      	mov	r0, r3
+ 80028e0:	f7ff fbf6 	bl	80020d0 <parqueos_disponiblesA>
+ 80028e4:	e04b      	b.n	800297e <main+0x5fa>
+ 80028e6:	bf00      	nop
+ 80028e8:	20010388 	.word	0x20010388
+ 80028ec:	20010055 	.word	0x20010055
  80028f0:	200000a4 	.word	0x200000a4
  80028f4:	0800cccc 	.word	0x0800cccc
  80028f8:	080324cc 	.word	0x080324cc
  80028fc:	200000a2 	.word	0x200000a2
- 8002900:	20018306 	.word	0x20018306
+ 8002900:	20010056 	.word	0x20010056
  8002904:	2aaaaaab 	.word	0x2aaaaaab
  8002908:	20000b44 	.word	0x20000b44
  800290c:	08032f6c 	.word	0x08032f6c
- 8002910:	20018307 	.word	0x20018307
+ 8002910:	20010057 	.word	0x20010057
 		}
 	}
 
@@ -5400,7 +5399,7 @@ int main(void)
  8002a80:	4b27      	ldr	r3, [pc, #156]	@ (8002b20 <main+0x79c>)
  8002a82:	2201      	movs	r2, #1
  8002a84:	701a      	strb	r2, [r3, #0]
-				LCD_DibujarSpriteUniversal(9, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(9, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
  8002a86:	f897 3067 	ldrb.w	r3, [r7, #103]	@ 0x67
  8002a8a:	4a27      	ldr	r2, [pc, #156]	@ (8002b28 <main+0x7a4>)
  8002a8c:	9206      	str	r2, [sp, #24]
@@ -5453,19 +5452,19 @@ int main(void)
  8002af0:	4618      	mov	r0, r3
  8002af2:	f7ff fb55 	bl	80021a0 <parqueos_disponiblesB>
  8002af6:	e050      	b.n	8002b9a <main+0x816>
- 8002af8:	20018638 	.word	0x20018638
- 8002afc:	20018307 	.word	0x20018307
+ 8002af8:	20010388 	.word	0x20010388
+ 8002afc:	20010057 	.word	0x20010057
  8002b00:	200000a4 	.word	0x200000a4
  8002b04:	0800cccc 	.word	0x0800cccc
  8002b08:	080324cc 	.word	0x080324cc
  8002b0c:	200000a2 	.word	0x200000a2
- 8002b10:	20018308 	.word	0x20018308
- 8002b14:	200110a4 	.word	0x200110a4
+ 8002b10:	20010058 	.word	0x20010058
+ 8002b14:	20008df4 	.word	0x20008df4
  8002b18:	080434cc 	.word	0x080434cc
- 8002b1c:	20018644 	.word	0x20018644
- 8002b20:	20018309 	.word	0x20018309
+ 8002b1c:	20010394 	.word	0x20010394
+ 8002b20:	20010059 	.word	0x20010059
  8002b24:	2aaaaaab 	.word	0x2aaaaaab
- 8002b28:	20008df4 	.word	0x20008df4
+ 8002b28:	20000b44 	.word	0x20000b44
  8002b2c:	0803b21c 	.word	0x0803b21c
  8002b30:	200000a3 	.word	0x200000a3
 			}
@@ -5563,7 +5562,7 @@ int main(void)
  8002bca:	1ad1      	subs	r1, r2, r3
  8002bcc:	460b      	mov	r3, r1
  8002bce:	f887 3066 	strb.w	r3, [r7, #102]	@ 0x66
-				LCD_DibujarSpriteUniversal(58, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(58, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
  8002bd2:	f897 3066 	ldrb.w	r3, [r7, #102]	@ 0x66
  8002bd6:	4a68      	ldr	r2, [pc, #416]	@ (8002d78 <main+0x9f4>)
  8002bd8:	9206      	str	r2, [sp, #24]
@@ -5710,7 +5709,7 @@ int main(void)
  8002cde:	4b28      	ldr	r3, [pc, #160]	@ (8002d80 <main+0x9fc>)
  8002ce0:	2201      	movs	r2, #1
  8002ce2:	701a      	strb	r2, [r3, #0]
-				LCD_DibujarSpriteUniversal(107, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(107, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
  8002ce4:	f897 3065 	ldrb.w	r3, [r7, #101]	@ 0x65
  8002ce8:	4a23      	ldr	r2, [pc, #140]	@ (8002d78 <main+0x9f4>)
  8002cea:	9206      	str	r2, [sp, #24]
@@ -5764,17 +5763,17 @@ int main(void)
  8002d50:	f7ff fa26 	bl	80021a0 <parqueos_disponiblesB>
  8002d54:	e049      	b.n	8002dea <main+0xa66>
  8002d56:	bf00      	nop
- 8002d58:	20018644 	.word	0x20018644
- 8002d5c:	20018309 	.word	0x20018309
+ 8002d58:	20010394 	.word	0x20010394
+ 8002d5c:	20010059 	.word	0x20010059
  8002d60:	200000a4 	.word	0x200000a4
  8002d64:	0800cccc 	.word	0x0800cccc
  8002d68:	080324cc 	.word	0x080324cc
  8002d6c:	200000a3 	.word	0x200000a3
- 8002d70:	2001830a 	.word	0x2001830a
+ 8002d70:	2001005a 	.word	0x2001005a
  8002d74:	2aaaaaab 	.word	0x2aaaaaab
- 8002d78:	20008df4 	.word	0x20008df4
+ 8002d78:	20000b44 	.word	0x20000b44
  8002d7c:	0803b21c 	.word	0x0803b21c
- 8002d80:	2001830b 	.word	0x2001830b
+ 8002d80:	2001005b 	.word	0x2001005b
 			}
 		}
 
@@ -5870,7 +5869,7 @@ int main(void)
  8002e1c:	4b3f      	ldr	r3, [pc, #252]	@ (8002f1c <main+0xb98>)
  8002e1e:	2201      	movs	r2, #1
  8002e20:	701a      	strb	r2, [r3, #0]
-				LCD_DibujarSpriteUniversal(155, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carB);
+				LCD_DibujarSpriteUniversal(155, 163, 41, 68, carroB, val, 246, parking, 320, 0xa501, carA);
  8002e22:	f897 3064 	ldrb.w	r3, [r7, #100]	@ 0x64
  8002e26:	4a3f      	ldr	r2, [pc, #252]	@ (8002f24 <main+0xba0>)
  8002e28:	9206      	str	r2, [sp, #24]
@@ -5989,15 +5988,15 @@ int main(void)
 	if (HAL_GetTick() - ultimo_print_uart >= 500) {
  8002efe:	f7ff baad 	b.w	800245c <main+0xd8>
  8002f02:	bf00      	nop
- 8002f04:	20018644 	.word	0x20018644
- 8002f08:	2001830b 	.word	0x2001830b
+ 8002f04:	20010394 	.word	0x20010394
+ 8002f08:	2001005b 	.word	0x2001005b
  8002f0c:	200000a4 	.word	0x200000a4
  8002f10:	0800cccc 	.word	0x0800cccc
  8002f14:	080324cc 	.word	0x080324cc
  8002f18:	200000a3 	.word	0x200000a3
- 8002f1c:	2001830c 	.word	0x2001830c
+ 8002f1c:	2001005c 	.word	0x2001005c
  8002f20:	2aaaaaab 	.word	0x2aaaaaab
- 8002f24:	20008df4 	.word	0x20008df4
+ 8002f24:	20000b44 	.word	0x20000b44
  8002f28:	0803b21c 	.word	0x0803b21c
 
 08002f2c <SystemClock_Config>:
@@ -6342,7 +6341,7 @@ static void MX_ADC2_Init(void)
  800310a:	3710      	adds	r7, #16
  800310c:	46bd      	mov	sp, r7
  800310e:	bd80      	pop	{r7, pc}
- 8003110:	20018310 	.word	0x20018310
+ 8003110:	20010060 	.word	0x20010060
  8003114:	40012100 	.word	0x40012100
  8003118:	0f000001 	.word	0x0f000001
 
@@ -6425,7 +6424,7 @@ static void MX_SPI1_Init(void)
 }
  800317c:	bf00      	nop
  800317e:	bd80      	pop	{r7, pc}
- 8003180:	200183b8 	.word	0x200183b8
+ 8003180:	20010108 	.word	0x20010108
  8003184:	40013000 	.word	0x40013000
 
 08003188 <MX_TIM1_Init>:
@@ -6636,7 +6635,7 @@ static void MX_TIM1_Init(void)
  80032ba:	46bd      	mov	sp, r7
  80032bc:	bd80      	pop	{r7, pc}
  80032be:	bf00      	nop
- 80032c0:	20018470 	.word	0x20018470
+ 80032c0:	200101c0 	.word	0x200101c0
  80032c4:	40010000 	.word	0x40010000
 
 080032c8 <MX_UART5_Init>:
@@ -6703,7 +6702,7 @@ static void MX_UART5_Init(void)
  800330e:	bf00      	nop
  8003310:	bd80      	pop	{r7, pc}
  8003312:	bf00      	nop
- 8003314:	20018518 	.word	0x20018518
+ 8003314:	20010268 	.word	0x20010268
  8003318:	40005000 	.word	0x40005000
 
 0800331c <MX_USART1_UART_Init>:
@@ -6770,7 +6769,7 @@ static void MX_USART1_UART_Init(void)
  8003362:	bf00      	nop
  8003364:	bd80      	pop	{r7, pc}
  8003366:	bf00      	nop
- 8003368:	20018560 	.word	0x20018560
+ 8003368:	200102b0 	.word	0x200102b0
  800336c:	40011000 	.word	0x40011000
 
 08003370 <MX_USART2_UART_Init>:
@@ -6837,7 +6836,7 @@ static void MX_USART2_UART_Init(void)
  80033b6:	bf00      	nop
  80033b8:	bd80      	pop	{r7, pc}
  80033ba:	bf00      	nop
- 80033bc:	200185a8 	.word	0x200185a8
+ 80033bc:	200102f8 	.word	0x200102f8
  80033c0:	40004400 	.word	0x40004400
 
 080033c4 <MX_USART3_UART_Init>:
@@ -6904,7 +6903,7 @@ static void MX_USART3_UART_Init(void)
  800340a:	bf00      	nop
  800340c:	bd80      	pop	{r7, pc}
  800340e:	bf00      	nop
- 8003410:	200185f0 	.word	0x200185f0
+ 8003410:	20010340 	.word	0x20010340
  8003414:	40004800 	.word	0x40004800
 
 08003418 <MX_DMA_Init>:
@@ -7274,7 +7273,7 @@ LED_Data[n] [3] = b;
  800364a:	46bd      	mov	sp, r7
  800364c:	bc90      	pop	{r4, r7}
  800364e:	4770      	bx	lr
- 8003650:	20018650 	.word	0x20018650
+ 8003650:	200103a0 	.word	0x200103a0
 
 08003654 <setBrightness>:
 
@@ -7363,9 +7362,9 @@ if (b > 100)
  80036e6:	46bd      	mov	sp, r7
  80036e8:	bd80      	pop	{r7, pc}
  80036ea:	bf00      	nop
- 80036ec:	2001864c 	.word	0x2001864c
- 80036f0:	20018650 	.word	0x20018650
- 80036f4:	20018664 	.word	0x20018664
+ 80036ec:	2001039c 	.word	0x2001039c
+ 80036f0:	200103a0 	.word	0x200103a0
+ 80036f4:	200103b4 	.word	0x200103b4
 
 080036f8 <pixelShow>:
 
@@ -7545,12 +7544,12 @@ for(int i = 0; i < numPixels; i++) {
  800381a:	46bd      	mov	sp, r7
  800381c:	bd80      	pop	{r7, pc}
  800381e:	bf00      	nop
- 8003820:	20018650 	.word	0x20018650
- 8003824:	20018664 	.word	0x20018664
- 8003828:	2001864c 	.word	0x2001864c
- 800382c:	20018678 	.word	0x20018678
- 8003830:	20018470 	.word	0x20018470
- 8003834:	200187cc 	.word	0x200187cc
+ 8003820:	200103a0 	.word	0x200103a0
+ 8003824:	200103b4 	.word	0x200103b4
+ 8003828:	2001039c 	.word	0x2001039c
+ 800382c:	200103c8 	.word	0x200103c8
+ 8003830:	200101c0 	.word	0x200101c0
+ 8003834:	2001051c 	.word	0x2001051c
 
 08003838 <pixelClear>:
 
@@ -7604,7 +7603,7 @@ void pixelClear(void) {
  8003884:	46bd      	mov	sp, r7
  8003886:	f85d 7b04 	ldr.w	r7, [sp], #4
  800388a:	4770      	bx	lr
- 800388c:	20018650 	.word	0x20018650
+ 800388c:	200103a0 	.word	0x200103a0
 
 08003890 <Gamma_correccion>:
 
@@ -7738,8 +7737,8 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
  80039b2:	46bd      	mov	sp, r7
  80039b4:	bd80      	pop	{r7, pc}
  80039b6:	bf00      	nop
- 80039b8:	20018470 	.word	0x20018470
- 80039bc:	200187cc 	.word	0x200187cc
+ 80039b8:	200101c0 	.word	0x200101c0
+ 80039bc:	2001051c 	.word	0x2001051c
 
 080039c0 <HAL_MspInit>:
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
@@ -8007,7 +8006,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
  8003b60:	40020800 	.word	0x40020800
  8003b64:	40020000 	.word	0x40020000
  8003b68:	40020400 	.word	0x40020400
- 8003b6c:	20018358 	.word	0x20018358
+ 8003b6c:	200100a8 	.word	0x200100a8
  8003b70:	40026440 	.word	0x40026440
 
 08003b74 <HAL_SPI_MspInit>:
@@ -8166,7 +8165,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
  8003c54:	40013000 	.word	0x40013000
  8003c58:	40023800 	.word	0x40023800
  8003c5c:	40020000 	.word	0x40020000
- 8003c60:	20018410 	.word	0x20018410
+ 8003c60:	20010160 	.word	0x20010160
  8003c64:	40026458 	.word	0x40026458
 
 08003c68 <HAL_TIM_Base_MspInit>:
@@ -8278,7 +8277,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
  8003cfe:	bf00      	nop
  8003d00:	40010000 	.word	0x40010000
  8003d04:	40023800 	.word	0x40023800
- 8003d08:	200184b8 	.word	0x200184b8
+ 8003d08:	20010208 	.word	0x20010208
  8003d0c:	40026428 	.word	0x40026428
 
 08003d10 <HAL_TIM_MspPostInit>:
@@ -8931,7 +8930,7 @@ void USART1_IRQHandler(void)
  80040aa:	bf00      	nop
  80040ac:	bd80      	pop	{r7, pc}
  80040ae:	bf00      	nop
- 80040b0:	20018560 	.word	0x20018560
+ 80040b0:	200102b0 	.word	0x200102b0
 
 080040b4 <USART2_IRQHandler>:
 
@@ -8955,7 +8954,7 @@ void USART2_IRQHandler(void)
  80040be:	bf00      	nop
  80040c0:	bd80      	pop	{r7, pc}
  80040c2:	bf00      	nop
- 80040c4:	200185a8 	.word	0x200185a8
+ 80040c4:	200102f8 	.word	0x200102f8
 
 080040c8 <USART3_IRQHandler>:
 
@@ -8979,7 +8978,7 @@ void USART3_IRQHandler(void)
  80040d2:	bf00      	nop
  80040d4:	bd80      	pop	{r7, pc}
  80040d6:	bf00      	nop
- 80040d8:	200185f0 	.word	0x200185f0
+ 80040d8:	20010340 	.word	0x20010340
 
 080040dc <DMA2_Stream1_IRQHandler>:
 
@@ -9003,7 +9002,7 @@ void DMA2_Stream1_IRQHandler(void)
  80040e6:	bf00      	nop
  80040e8:	bd80      	pop	{r7, pc}
  80040ea:	bf00      	nop
- 80040ec:	200184b8 	.word	0x200184b8
+ 80040ec:	20010208 	.word	0x20010208
 
 080040f0 <DMA2_Stream2_IRQHandler>:
 
@@ -9027,7 +9026,7 @@ void DMA2_Stream2_IRQHandler(void)
  80040fa:	bf00      	nop
  80040fc:	bd80      	pop	{r7, pc}
  80040fe:	bf00      	nop
- 8004100:	20018358 	.word	0x20018358
+ 8004100:	200100a8 	.word	0x200100a8
 
 08004104 <DMA2_Stream3_IRQHandler>:
 
@@ -9051,7 +9050,7 @@ void DMA2_Stream3_IRQHandler(void)
  800410e:	bf00      	nop
  8004110:	bd80      	pop	{r7, pc}
  8004112:	bf00      	nop
- 8004114:	20018410 	.word	0x20018410
+ 8004114:	20010160 	.word	0x20010160
 
 08004118 <_getpid>:
 void initialise_monitor_handles()
@@ -9357,8 +9356,8 @@ void *_sbrk(ptrdiff_t incr)
  8004292:	bd80      	pop	{r7, pc}
  8004294:	20020000 	.word	0x20020000
  8004298:	00000400 	.word	0x00000400
- 800429c:	200187d0 	.word	0x200187d0
- 80042a0:	20018938 	.word	0x20018938
+ 800429c:	20010520 	.word	0x20010520
+ 80042a0:	20010688 	.word	0x20010688
 
 080042a4 <SystemInit>:
   *         configuration.
@@ -9480,7 +9479,7 @@ LoopFillZerobss:
   ldr r2, =_sbss
  8004310:	20000080 	.word	0x20000080
   ldr r4, =_ebss
- 8004314:	20018938 	.word	0x20018938
+ 8004314:	20010688 	.word	0x20010688
 
 08004318 <ADC_IRQHandler>:
  * @retval None       
@@ -9643,7 +9642,7 @@ __weak void HAL_IncTick(void)
  80043dc:	4770      	bx	lr
  80043de:	bf00      	nop
  80043e0:	2000000c 	.word	0x2000000c
- 80043e4:	200187d4 	.word	0x200187d4
+ 80043e4:	20010524 	.word	0x20010524
 
 080043e8 <HAL_GetTick>:
   * @note This function is declared as __weak to be overwritten in case of other 
@@ -9663,7 +9662,7 @@ __weak uint32_t HAL_GetTick(void)
  80043f4:	f85d 7b04 	ldr.w	r7, [sp], #4
  80043f8:	4770      	bx	lr
  80043fa:	bf00      	nop
- 80043fc:	200187d4 	.word	0x200187d4
+ 80043fc:	20010524 	.word	0x20010524
 
 08004400 <HAL_Delay>:
   *       implementations in user file.
@@ -23667,9 +23666,9 @@ void MX_FATFS_Init(void)
 }
  8009630:	bf00      	nop
  8009632:	bd80      	pop	{r7, pc}
- 8009634:	200187dc 	.word	0x200187dc
+ 8009634:	2001052c 	.word	0x2001052c
  8009638:	20000010 	.word	0x20000010
- 800963c:	200187d8 	.word	0x200187d8
+ 800963c:	20010528 	.word	0x20010528
 
 08009640 <USER_initialize>:
   * @retval DSTATUS: Operation status
@@ -23919,7 +23918,7 @@ uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun
  8009778:	f85d 7b04 	ldr.w	r7, [sp], #4
  800977c:	4770      	bx	lr
  800977e:	bf00      	nop
- 8009780:	200187e0 	.word	0x200187e0
+ 8009780:	20010530 	.word	0x20010530
 
 08009784 <FATFS_LinkDriver>:
   * @param  drv: pointer to the disk IO Driver structure
@@ -24035,7 +24034,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  800987c:	08009a0f 	.word	0x08009a0f
  8009880:	08009a47 	.word	0x08009a47
  8009884:	08009a6d 	.word	0x08009a6d
- 8009888:	200187ec 	.word	0x200187ec
+ 8009888:	2001053c 	.word	0x2001053c
 
 0800988c <stdio_exit_handler>:
  800988c:	4a02      	ldr	r2, [pc, #8]	@ (8009898 <stdio_exit_handler+0xc>)
@@ -24070,9 +24069,9 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  80098d0:	f000 bdd8 	b.w	800a484 <_fflush_r>
  80098d4:	bd10      	pop	{r4, pc}
  80098d6:	bf00      	nop
- 80098d8:	200187ec 	.word	0x200187ec
- 80098dc:	20018854 	.word	0x20018854
- 80098e0:	200188bc 	.word	0x200188bc
+ 80098d8:	2001053c 	.word	0x2001053c
+ 80098dc:	200105a4 	.word	0x200105a4
+ 80098e0:	2001060c 	.word	0x2001060c
 
 080098e4 <global_stdio_init.part.0>:
  80098e4:	4b0c      	ldr	r3, [pc, #48]	@ (8009918 <global_stdio_init.part.0+0x34>)
@@ -24095,21 +24094,21 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009910:	2112      	movs	r1, #18
  8009912:	f7ff bf85 	b.w	8009820 <std>
  8009916:	bf00      	nop
- 8009918:	20018924 	.word	0x20018924
+ 8009918:	20010674 	.word	0x20010674
  800991c:	0800988d 	.word	0x0800988d
- 8009920:	200187ec 	.word	0x200187ec
+ 8009920:	2001053c 	.word	0x2001053c
 
 08009924 <__sfp_lock_acquire>:
  8009924:	4801      	ldr	r0, [pc, #4]	@ (800992c <__sfp_lock_acquire+0x8>)
  8009926:	f000 b91e 	b.w	8009b66 <__retarget_lock_acquire_recursive>
  800992a:	bf00      	nop
- 800992c:	2001892d 	.word	0x2001892d
+ 800992c:	2001067d 	.word	0x2001067d
 
 08009930 <__sfp_lock_release>:
  8009930:	4801      	ldr	r0, [pc, #4]	@ (8009938 <__sfp_lock_release+0x8>)
  8009932:	f000 b919 	b.w	8009b68 <__retarget_lock_release_recursive>
  8009936:	bf00      	nop
- 8009938:	2001892d 	.word	0x2001892d
+ 8009938:	2001067d 	.word	0x2001067d
 
 0800993c <__sinit>:
  800993c:	b510      	push	{r4, lr}
@@ -24129,7 +24128,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009960:	e7f2      	b.n	8009948 <__sinit+0xc>
  8009962:	bf00      	nop
  8009964:	080098a5 	.word	0x080098a5
- 8009968:	20018924 	.word	0x20018924
+ 8009968:	20010674 	.word	0x20010674
 
 0800996c <_fwalk_sglue>:
  800996c:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -24270,7 +24269,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009a9a:	b103      	cbz	r3, 8009a9e <_close_r+0x1a>
  8009a9c:	6023      	str	r3, [r4, #0]
  8009a9e:	bd38      	pop	{r3, r4, r5, pc}
- 8009aa0:	20018928 	.word	0x20018928
+ 8009aa0:	20010678 	.word	0x20010678
 
 08009aa4 <_lseek_r>:
  8009aa4:	b538      	push	{r3, r4, r5, lr}
@@ -24288,7 +24287,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009abe:	b103      	cbz	r3, 8009ac2 <_lseek_r+0x1e>
  8009ac0:	6023      	str	r3, [r4, #0]
  8009ac2:	bd38      	pop	{r3, r4, r5, pc}
- 8009ac4:	20018928 	.word	0x20018928
+ 8009ac4:	20010678 	.word	0x20010678
 
 08009ac8 <_read_r>:
  8009ac8:	b538      	push	{r3, r4, r5, lr}
@@ -24306,7 +24305,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009ae2:	b103      	cbz	r3, 8009ae6 <_read_r+0x1e>
  8009ae4:	6023      	str	r3, [r4, #0]
  8009ae6:	bd38      	pop	{r3, r4, r5, pc}
- 8009ae8:	20018928 	.word	0x20018928
+ 8009ae8:	20010678 	.word	0x20010678
 
 08009aec <_write_r>:
  8009aec:	b538      	push	{r3, r4, r5, lr}
@@ -24324,7 +24323,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009b06:	b103      	cbz	r3, 8009b0a <_write_r+0x1e>
  8009b08:	6023      	str	r3, [r4, #0]
  8009b0a:	bd38      	pop	{r3, r4, r5, pc}
- 8009b0c:	20018928 	.word	0x20018928
+ 8009b0c:	20010678 	.word	0x20010678
 
 08009b10 <__errno>:
  8009b10:	4b01      	ldr	r3, [pc, #4]	@ (8009b18 <__errno+0x8>)
@@ -24468,7 +24467,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009c32:	e7ca      	b.n	8009bca <_free_r+0x22>
  8009c34:	bd38      	pop	{r3, r4, r5, pc}
  8009c36:	bf00      	nop
- 8009c38:	20018934 	.word	0x20018934
+ 8009c38:	20010684 	.word	0x20010684
 
 08009c3c <malloc>:
  8009c3c:	4b02      	ldr	r3, [pc, #8]	@ (8009c48 <malloc+0xc>)
@@ -24506,7 +24505,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009c86:	d1f2      	bne.n	8009c6e <sbrk_aligned+0x22>
  8009c88:	e7ef      	b.n	8009c6a <sbrk_aligned+0x1e>
  8009c8a:	bf00      	nop
- 8009c8c:	20018930 	.word	0x20018930
+ 8009c8c:	20010680 	.word	0x20010680
 
 08009c90 <_malloc_r>:
  8009c90:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -24616,19 +24615,19 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  8009d86:	6005      	str	r5, [r0, #0]
  8009d88:	e7d6      	b.n	8009d38 <_malloc_r+0xa8>
  8009d8a:	bf00      	nop
- 8009d8c:	20018934 	.word	0x20018934
+ 8009d8c:	20010684 	.word	0x20010684
 
 08009d90 <__malloc_lock>:
  8009d90:	4801      	ldr	r0, [pc, #4]	@ (8009d98 <__malloc_lock+0x8>)
  8009d92:	f7ff bee8 	b.w	8009b66 <__retarget_lock_acquire_recursive>
  8009d96:	bf00      	nop
- 8009d98:	2001892c 	.word	0x2001892c
+ 8009d98:	2001067c 	.word	0x2001067c
 
 08009d9c <__malloc_unlock>:
  8009d9c:	4801      	ldr	r0, [pc, #4]	@ (8009da4 <__malloc_unlock+0x8>)
  8009d9e:	f7ff bee3 	b.w	8009b68 <__retarget_lock_release_recursive>
  8009da2:	bf00      	nop
- 8009da4:	2001892c 	.word	0x2001892c
+ 8009da4:	2001067c 	.word	0x2001067c
 
 08009da8 <__ssputs_r>:
  8009da8:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -25457,7 +25456,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  800a542:	b103      	cbz	r3, 800a546 <_sbrk_r+0x1a>
  800a544:	6023      	str	r3, [r4, #0]
  800a546:	bd38      	pop	{r3, r4, r5, pc}
- 800a548:	20018928 	.word	0x20018928
+ 800a548:	20010678 	.word	0x20010678
 
 0800a54c <memcpy>:
  800a54c:	440a      	add	r2, r1
@@ -25976,7 +25975,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  800a9ea:	6023      	str	r3, [r4, #0]
  800a9ec:	bd38      	pop	{r3, r4, r5, pc}
  800a9ee:	bf00      	nop
- 800a9f0:	20018928 	.word	0x20018928
+ 800a9f0:	20010678 	.word	0x20010678
 
 0800a9f4 <_getpid_r>:
  800a9f4:	f7f9 bb90 	b.w	8004118 <_getpid>
@@ -26086,7 +26085,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  800aade:	6023      	str	r3, [r4, #0]
  800aae0:	bd38      	pop	{r3, r4, r5, pc}
  800aae2:	bf00      	nop
- 800aae4:	20018928 	.word	0x20018928
+ 800aae4:	20010678 	.word	0x20010678
 
 0800aae8 <_isatty_r>:
  800aae8:	b538      	push	{r3, r4, r5, lr}
@@ -26102,7 +26101,7 @@ uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
  800aafe:	b103      	cbz	r3, 800ab02 <_isatty_r+0x1a>
  800ab00:	6023      	str	r3, [r4, #0]
  800ab02:	bd38      	pop	{r3, r4, r5, pc}
- 800ab04:	20018928 	.word	0x20018928
+ 800ab04:	20010678 	.word	0x20010678
 
 0800ab08 <pow>:
  800ab08:	b5f8      	push	{r3, r4, r5, r6, r7, lr}

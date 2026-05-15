@@ -62,8 +62,10 @@
 ADC_HandleTypeDef hadc2;
 DMA_HandleTypeDef hdma_adc2;
 
-TIM_HandleTypeDef htim1;
-DMA_HandleTypeDef hdma_tim1_ch1;
+I2C_HandleTypeDef hi2c1;
+
+TIM_HandleTypeDef htim3;
+DMA_HandleTypeDef hdma_tim3_ch1_trig;
 
 UART_HandleTypeDef huart2;
 
@@ -75,6 +77,13 @@ volatile uint16_t contador = 0;
 float brilloled;
 
 
+#define TXBUFFERSIZE 4
+#define RXBUFFERSIZE 4
+
+int count = 0;
+
+uint8_t aTxBuffer [TXBUFFERSIZE];
+uint8_t aRxBuffer [RXBUFFERSIZE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,7 +92,8 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_ADC2_Init(void);
-static void MX_TIM1_Init(void);
+static void MX_I2C1_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 void display_show(uint8_t numero);
 /* USER CODE END PFP */
@@ -95,7 +105,7 @@ void actualizar_leds(void)
     // Parqueos A
     for (int i = 0; i < 4; i++)
     {
-        if (ADCVal[i] < 1600) // ocupado
+        if (ADCVal[i] < 1600)
         {
         	setPixelColor(i, 255, 0, 0); // ROJO
         }
@@ -107,6 +117,18 @@ void actualizar_leds(void)
     pixelShow();
 }
 
+uint8_t contar_B(void)
+{
+    uint8_t ocupados = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (ADCVal[i] < 1600)
+            ocupados++;
+    }
+
+    return ocupados;
+}
 /* USER CODE END 0 */
 
 /**
@@ -141,48 +163,76 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC2_Init();
-  MX_TIM1_Init();
+  MX_I2C1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADCVal, 4);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 
 
   pixelClear();
-  setBrightness(50); // o el valor que quieras
+  setBrightness(50);
   pixelShow();
+
+	if (HAL_I2C_EnableListen_IT(&hi2c1) != HAL_OK) {
+	Error_Handler();
+	}
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /*
+// 1. Leer sensores propios y cargarlos al buffer para el Maestro
+		for (int i = 0; i < 4; i++)
+		{
+			if (ADCVal[i] < 1600) {
+				aTxBuffer[i] = 1; // Ocupado
+			} else if (ADCVal[i] > 1800) {
+				aTxBuffer[i] = 0; // Libre
+			}
+		}
 
-	      for (int i = 0; i < 4; i++)
-	      {
-	          if (ADCVal[i] < 1600)
-	          {
-	              if (estado[i] == 0)
-	              {
-	                  estado[i] = 1;
-	                  if (contador < 9) contador++;
-	              }
-	          }
-	          else if (ADCVal[i] > 1800)
-	          {
-	              if (estado[i] == 1)
-	              {
-	                  estado[i] = 0;
-	                  if (contador > 0) contador--;
-	              }
-	          }
-	      }
+		// total parqueo
+		uint8_t ocupados_B = aTxBuffer[0] + aTxBuffer[1] + aTxBuffer[2] + aTxBuffer[3];
+		uint8_t ocupados_A = aRxBuffer[0] + aRxBuffer[1] + aRxBuffer[2] + aRxBuffer[3];
 
-	      display_show(4-contador);
+		//Mostrar el total disponibles
+		uint8_t total_disponibles = 8 - (ocupados_A + ocupados_B);
 
-	      HAL_Delay(50);
-	      actualizar_leds();
+		// display valor
+		if(total_disponibles > 8) total_disponibles = 0;
+
+		display_show(total_disponibles);
+
+		HAL_Delay(50);
+	    actualizar_leds();*/
+	  // 1. LEER MIS PROPIOS SENSORES (Nivel A) Y CARGARLOS AL BUFFER I2C
+	       for (int i = 0; i < 4; i++)
+	       {
+	           if (ADCVal[i] < 1600) {
+	               aTxBuffer[i] = 1; // Ocupado
+	               setPixelColor(i, 255, 0, 0); // Led Rojo
+	           } else if (ADCVal[i] > 1800) {
+	               aTxBuffer[i] = 0; // Libre
+	               setPixelColor(i, 0, 255, 0); // Led Verde
+	           }
+	       }
+
+	       // Actualizar Neopixeles del Nivel A
+	       pixelShow();
+
+	       // 2. MOSTRAR EL TOTAL EN EL DISPLAY (Enviado por el ESP32)
+	       // aRxBuffer[0] tiene el cálculo exacto de espacios libres
+	       uint8_t total_disponibles = aRxBuffer[0];
+
+	       // Protección: Solo mostrar si es un número válido (0 a 8)
+	       if(total_disponibles <= 8) {
+	           display_show(total_disponibles);
+	       }
+
+	       HAL_Delay(50);
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -315,77 +365,95 @@ static void MX_ADC2_Init(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
+  * @brief I2C1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM1_Init(void)
+static void MX_I2C1_Init(void)
 {
 
-  /* USER CODE BEGIN TIM1_Init 0 */
+  /* USER CODE BEGIN I2C1_Init 0 */
 
-  /* USER CODE END TIM1_Init 0 */
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 78;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
-  /* USER CODE BEGIN TIM1_Init 1 */
+  /* USER CODE BEGIN TIM3_Init 1 */
 
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 105-1;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 105-1;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
   }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
+  /* USER CODE BEGIN TIM3_Init 2 */
 
-  /* USER CODE END TIM1_Init 2 */
-  HAL_TIM_MspPostInit(&htim1);
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -430,11 +498,12 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA2_Stream1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+  /* DMA1_Stream4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
@@ -541,6 +610,85 @@ void display_show(uint8_t numero)
     HAL_GPIO_WritePin(SEG_G_PORT, SEG_G_PIN, (pattern & (1 << 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
+/*
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
+HAL_I2C_EnableListen_IT(hi2c);
+}
+
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle) {
+	aTxBuffer[0]++;
+	aTxBuffer[1]++;
+	aTxBuffer[2]++;
+	aTxBuffer[3]++;
+}
+
+void HAL_I2C_SlaveRxCpltCallback (I2C_HandleTypeDef *I2cHandle) {
+	if(aRxBuffer[0] == 83) {
+	}
+
+	//HAL_UART_Transmit(&huart2, aTxBuffer, 4, 1000);
+
+	aRxBuffer[0]=0x00;
+	aRxBuffer[1]=0x00;
+	aRxBuffer[2]=0x00;
+	aRxBuffer[3]=0x00;
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
+{
+	if (TransferDirection == I2C_DIRECTION_TRANSMIT){
+		if(HAL_I2C_Slave_Seq_Receive_IT(&hi2c1,(uint8_t*) aRxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
+		{
+			 HAL_I2C_EnableListen_IT(&hi2c1);
+		}
+	}
+	else if (TransferDirection == I2C_DIRECTION_RECEIVE){
+		if(HAL_I2C_Slave_Seq_Transmit_IT(&hi2c1,(uint8_t*) aTxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
+		{
+			 HAL_I2C_EnableListen_IT(&hi2c1);
+		}
+	}
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle) {
+
+	if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF) {
+	Error_Handler();
+	}
+}
+*/
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
+    HAL_I2C_EnableListen_IT(hi2c);
+}
+
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle) {
+}
+
+void HAL_I2C_SlaveRxCpltCallback (I2C_HandleTypeDef *I2cHandle) {
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
+{
+	if (TransferDirection == I2C_DIRECTION_TRANSMIT){ // maestro escribir
+		if(HAL_I2C_Slave_Seq_Receive_IT(&hi2c1,(uint8_t*) aRxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
+		{
+			 HAL_I2C_EnableListen_IT(&hi2c1);
+		}
+	}
+	else if (TransferDirection == I2C_DIRECTION_RECEIVE){ // Maestro quiere leer
+		if(HAL_I2C_Slave_Seq_Transmit_IT(&hi2c1,(uint8_t*) aTxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
+		{
+			 HAL_I2C_EnableListen_IT(&hi2c1);
+		}
+	}
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle) {
+	if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF) {
+	    // Error_Handler();
+        HAL_I2C_EnableListen_IT(&hi2c1); // Volver a escuchar
+	}
+}
 /* USER CODE END 4 */
 
 /**
