@@ -25,8 +25,8 @@ unsigned long previousMillis = 0;
 const long interval = 500;
 //************************************************************************************************
 // SSID & Password
-const char* ssid = "HAB309";  // Enter your SSID here
-const char* password = "36266906";  //Enter your Password here
+const char* ssid = "Bryan";  // Enter your SSID here
+const char* password = "marvelitas";  //Enter your Password here
 
 WebServer server(80);  // Object of WebServer(HTTP port, 80 is defult)
 
