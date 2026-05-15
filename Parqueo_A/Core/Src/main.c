@@ -100,35 +100,6 @@ void display_show(uint8_t numero);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void actualizar_leds(void)
-{
-    // Parqueos A
-    for (int i = 0; i < 4; i++)
-    {
-        if (ADCVal[i] < 1600)
-        {
-        	setPixelColor(i, 255, 0, 0); // ROJO
-        }
-        else
-        {
-            setPixelColor(i, 0, 255, 0); // VERDE
-        }
-    }
-    pixelShow();
-}
-
-uint8_t contar_B(void)
-{
-    uint8_t ocupados = 0;
-
-    for (int i = 0; i < 4; i++)
-    {
-        if (ADCVal[i] < 1600)
-            ocupados++;
-    }
-
-    return ocupados;
-}
 /* USER CODE END 0 */
 
 /**
@@ -168,13 +139,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADCVal, 4);
 
-
+  //Inicialización del neopixel y seteo de brillo
   pixelClear();
   setBrightness(50);
   pixelShow();
 
+  //Inicio de I2C y verificación de estabilidad
 	if (HAL_I2C_EnableListen_IT(&hi2c1) != HAL_OK) {
-	Error_Handler();
+	Error_Handler(); //Mandar a error si falla.
 	}
   /* USER CODE END 2 */
 
@@ -182,56 +154,30 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /*
-// 1. Leer sensores propios y cargarlos al buffer para el Maestro
-		for (int i = 0; i < 4; i++)
-		{
-			if (ADCVal[i] < 1600) {
-				aTxBuffer[i] = 1; // Ocupado
-			} else if (ADCVal[i] > 1800) {
-				aTxBuffer[i] = 0; // Libre
-			}
-		}
+// Leer las entradas analogicas y mandalos por I2C:
+	   for (int i = 0; i < 4; i++)
+	   {
+		   if (ADCVal[i] < 1600) {
+			   aTxBuffer[i] = 1; // Ocupado
+			   setPixelColor(i, 255, 0, 0); // Led Rojo
+		   } else if (ADCVal[i] > 1800) {
+			   aTxBuffer[i] = 0; // Libre
+			   setPixelColor(i, 0, 255, 0); // Led Verde
+		   }
+	   }
 
-		// total parqueo
-		uint8_t ocupados_B = aTxBuffer[0] + aTxBuffer[1] + aTxBuffer[2] + aTxBuffer[3];
-		uint8_t ocupados_A = aRxBuffer[0] + aRxBuffer[1] + aRxBuffer[2] + aRxBuffer[3];
+	   // Actualizar Neopixeles del Nivel A
+	   pixelShow();
 
-		//Mostrar el total disponibles
-		uint8_t total_disponibles = 8 - (ocupados_A + ocupados_B);
+	   // Mostrar los valores en el display:
+	   uint8_t total_disponibles = aRxBuffer[0];
 
-		// display valor
-		if(total_disponibles > 8) total_disponibles = 0;
+	   // Verifica si ya se ocuparon todos los espacios antes de mostrarlo en el display.
+	   if(total_disponibles <= 8) {
+		   display_show(total_disponibles);
+	   }
 
-		display_show(total_disponibles);
-
-		HAL_Delay(50);
-	    actualizar_leds();*/
-	  // 1. LEER MIS PROPIOS SENSORES (Nivel A) Y CARGARLOS AL BUFFER I2C
-	       for (int i = 0; i < 4; i++)
-	       {
-	           if (ADCVal[i] < 1600) {
-	               aTxBuffer[i] = 1; // Ocupado
-	               setPixelColor(i, 255, 0, 0); // Led Rojo
-	           } else if (ADCVal[i] > 1800) {
-	               aTxBuffer[i] = 0; // Libre
-	               setPixelColor(i, 0, 255, 0); // Led Verde
-	           }
-	       }
-
-	       // Actualizar Neopixeles del Nivel A
-	       pixelShow();
-
-	       // 2. MOSTRAR EL TOTAL EN EL DISPLAY (Enviado por el ESP32)
-	       // aRxBuffer[0] tiene el cálculo exacto de espacios libres
-	       uint8_t total_disponibles = aRxBuffer[0];
-
-	       // Protección: Solo mostrar si es un número válido (0 a 8)
-	       if(total_disponibles <= 8) {
-	           display_show(total_disponibles);
-	       }
-
-	       HAL_Delay(50);
+	   HAL_Delay(50);
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }
@@ -590,6 +536,7 @@ static const uint8_t dig_display[16] =
 	0x47  // F
 };
 
+//************************* Función para el orden del 7 Segmentos ************************
 void display_show(uint8_t numero)
 {
     if (numero >= 16) return;
@@ -610,53 +557,7 @@ void display_show(uint8_t numero)
     HAL_GPIO_WritePin(SEG_G_PORT, SEG_G_PIN, (pattern & (1 << 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
-/*
-void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
-HAL_I2C_EnableListen_IT(hi2c);
-}
-
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle) {
-	aTxBuffer[0]++;
-	aTxBuffer[1]++;
-	aTxBuffer[2]++;
-	aTxBuffer[3]++;
-}
-
-void HAL_I2C_SlaveRxCpltCallback (I2C_HandleTypeDef *I2cHandle) {
-	if(aRxBuffer[0] == 83) {
-	}
-
-	//HAL_UART_Transmit(&huart2, aTxBuffer, 4, 1000);
-
-	aRxBuffer[0]=0x00;
-	aRxBuffer[1]=0x00;
-	aRxBuffer[2]=0x00;
-	aRxBuffer[3]=0x00;
-}
-
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
-{
-	if (TransferDirection == I2C_DIRECTION_TRANSMIT){
-		if(HAL_I2C_Slave_Seq_Receive_IT(&hi2c1,(uint8_t*) aRxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
-		{
-			 HAL_I2C_EnableListen_IT(&hi2c1);
-		}
-	}
-	else if (TransferDirection == I2C_DIRECTION_RECEIVE){
-		if(HAL_I2C_Slave_Seq_Transmit_IT(&hi2c1,(uint8_t*) aTxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
-		{
-			 HAL_I2C_EnableListen_IT(&hi2c1);
-		}
-	}
-}
-
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle) {
-
-	if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF) {
-	Error_Handler();
-	}
-}
-*/
+//****************** Call back para el I2C *******************************
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
     HAL_I2C_EnableListen_IT(hi2c);
 }
@@ -669,7 +570,7 @@ void HAL_I2C_SlaveRxCpltCallback (I2C_HandleTypeDef *I2cHandle) {
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
 {
-	if (TransferDirection == I2C_DIRECTION_TRANSMIT){ // maestro escribir
+	if (TransferDirection == I2C_DIRECTION_TRANSMIT){ // Enviar al maestro los datos
 		if(HAL_I2C_Slave_Seq_Receive_IT(&hi2c1,(uint8_t*) aRxBuffer,4,I2C_FIRST_AND_LAST_FRAME)!=HAL_OK)
 		{
 			 HAL_I2C_EnableListen_IT(&hi2c1);
@@ -686,7 +587,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uin
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle) {
 	if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF) {
 	    // Error_Handler();
-        HAL_I2C_EnableListen_IT(&hi2c1); // Volver a escuchar
+        HAL_I2C_EnableListen_IT(&hi2c1); // Volver a escuchar el I2C
 	}
 }
 /* USER CODE END 4 */

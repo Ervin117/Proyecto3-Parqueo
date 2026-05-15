@@ -48,6 +48,7 @@ bool H_status = LOW;
 Servo miServo;
 int pinServo = 18; // Puedes usar el pin 18 o cualquier otro PWM
 int posicion = 0;  // 0 para cerrado, 1 para abierto
+
 //************************************************************************************************
 // Configuración
 //************************************************************************************************
@@ -94,131 +95,6 @@ void setup() {
 // loop principal
 //************************************************************************************************
 void loop() {
-
-  /*
-  server.handleClient(); // Atiende las peticiones web
-  
-  // Aplicar el estado al LED físico
-  digitalWrite(LED1pin, LED1status);
-  // Lógica para interpretar datos del UART
-  if (Serial.available() > 0) {
-    char numero_recibido = Serial.read(); // Leemos el carácter
-
-    // Lógica para variables
-    if (numero_recibido == 'a') {
-      A1_status = HIGH;
-      Serial.println("Espacio A1 Ocupado");
-    } 
-    else if (numero_recibido == 'b') {
-      A2_status = HIGH;
-      Serial.println("Espacio A2 Ocupado");
-    } 
-    else if (numero_recibido == 'c') {
-      A3_status = HIGH;
-      Serial.println("Espacio A3 Ocupado");
-    } 
-    else if (numero_recibido == 'd') {
-      A4_status = HIGH;
-      Serial.println("Espacio A4 Ocupado");
-    }
-    
-    // Lógica para variables B
-    else if (numero_recibido == 'e') {
-      B1_status = HIGH;
-      Serial.println("Espacio B1 Ocupado");
-    } 
-    else if (numero_recibido == 'f') {
-      B2_status = HIGH;
-      Serial.println("Espacio B2 Ocupado");
-    } 
-    else if (numero_recibido == 'g') {
-      B3_status = HIGH;
-      Serial.println("Espacio B3 Ocupado");
-    } 
-    else if (numero_recibido == 'h') {
-      B4_status = HIGH;
-      Serial.println("Espacio B4 Ocupado");
-    }
-    
-    // Lógica para variable H 
-    else if (numero_recibido == 'x') {
-      H_status = HIGH;
-      Serial.println("Helipuerto ocupado");
-    }
-
-    // para recetear todos los estados
-    else if (numero_recibido == 'r') {
-      A1_status = A2_status = A3_status = A4_status = LOW;
-      B1_status = B2_status = B3_status = B4_status = LOW;
-      H_status = LOW;
-    }
-  }
-  */
-
-
-
-
-  /*
-  server.handleClient(); // Atiende las peticiones web
-  
-  // Aplicar el estado al LED físico
-  digitalWrite(LED1pin, LED1status);
-
-  // Lógica para interpretar datos del UART (PC -> ESP32)
-  if (Serial.available() > 0) {
-    char numero_recibido = Serial.read(); 
-    // Lógica para variables Nivel A
-    if (numero_recibido == 'a') { A1_status = HIGH; Serial.println("Espacio A1 Ocupado"); } 
-    else if (numero_recibido == 'b') { A2_status = HIGH; Serial.println("Espacio A2 Ocupado"); } 
-    else if (numero_recibido == 'c') { A3_status = HIGH; Serial.println("Espacio A3 Ocupado"); } 
-    else if (numero_recibido == 'd') { A4_status = HIGH; Serial.println("Espacio A4 Ocupado"); }
-    
-    // Lógica para variable H 
-    else if (numero_recibido == 'x') { H_status = HIGH; Serial.println("Helipuerto ocupado"); }
-
-    // para resetear todos los estados
-    else if (numero_recibido == 'r') {
-      A1_status = A2_status = A3_status = A4_status = LOW;
-      B1_status = B2_status = B3_status = B4_status = LOW;
-      H_status = LOW;
-    }
-  }
-
-  // Lógica de Comunicación I2C (cada 500 ms)
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-
-    // 1. ENVIAR DATOS (NIVEL A) AL STM32
-    Wire.beginTransmission(I2CSlaveAddress2); 
-    Wire.write(A1_status);
-    Wire.write(A2_status);
-    Wire.write(A3_status);
-    Wire.write(A4_status);
-    error = Wire.endTransmission(); 
-
-    if(error == 0) { // Si la escritura fue exitosa
-      
-      // 2. PEDIR DATOS (NIVEL B) AL STM32
-      uint8_t bytesReceived = Wire.requestFrom((uint16_t)I2CSlaveAddress2, (uint8_t)4); 
-      
-      if (bytesReceived == 4) {
-        // Leer los 4 bytes y actualizar las variables para la página web
-        B1_status = Wire.read();
-        B2_status = Wire.read();
-        B3_status = Wire.read();
-        B4_status = Wire.read();
-      } else {
-        Serial.println("Error: No se recibieron 4 bytes del STM32"); 
-      }
-
-    } else {
-      Serial.print("Error I2C TX al STM32. Codigo: ");
-      Serial.println(error);
-    }
-  }
-
-  */
  server.handleClient(); // Atiende las peticiones web
   
   digitalWrite(LED1pin, LED1status);
@@ -229,7 +105,7 @@ void loop() {
     previousMillis = currentMillis;
 
     // ==========================================================
-    // PASO 1: LEER SENSORES (Nivel A) DE LA PLACA 7 SEG (0x27)
+    // LEER SENSORES (Nivel A) DE LA PLACA 7 SEG (0x27)
     // ==========================================================
     uint8_t bytesA = Wire.requestFrom((uint16_t)I2CSlaveAddress2, (uint8_t)4); 
     if (bytesA == 4) {
@@ -240,7 +116,7 @@ void loop() {
     }
 
     // ==========================================================
-    // PASO 2: LEER SENSORES (Nivel B) DE LA PLACA PANTALLA (0x18)
+    // LEER SENSORES (Nivel B) DE LA PLACA PANTALLA (0x18)
     // ==========================================================
     uint8_t bytesB = Wire.requestFrom((uint16_t)I2CSlaveAddress1, (uint8_t)4); 
     if (bytesB == 4) {
@@ -251,7 +127,7 @@ void loop() {
     }
 
     // ==========================================================
-    // PASO 3: ENVIAR DATOS A LA PANTALLA (Animaciones Nivel A)
+    // ENVIAR DATOS A LA PANTALLA (Animaciones Nivel A)
     // ==========================================================
     Wire.beginTransmission(I2CSlaveAddress1); 
     Wire.write(A1_status);
@@ -261,7 +137,7 @@ void loop() {
     Wire.endTransmission(); 
 
     // ==========================================================
-    // PASO 4: CALCULAR TOTAL Y ENVIAR AL 7 SEGMENTOS
+    // CALCULAR TOTAL Y ENVIAR AL 7 SEGMENTOS
     // ==========================================================
     uint8_t ocupados = A1_status + A2_status + A3_status + A4_status + 
                        B1_status + B2_status + B3_status + B4_status;
@@ -276,6 +152,7 @@ void loop() {
     Wire.endTransmission();
   }
 }
+
 //************************************************************************************************
 // Handler de Inicio página
 //************************************************************************************************
@@ -285,6 +162,7 @@ void handle_OnConnect() {
   //Serial.println("GPIO2 Status: OFF");
   server.send(200, "text/html", SendHTML());
 }
+
 //************************************************************************************************
 // Handler de led1on
 //************************************************************************************************
@@ -294,6 +172,7 @@ void handle_led1on() {
   //Serial.println("GPIO2 Status: ON");
   server.send(200, "text/html", SendHTML());
 }
+
 //************************************************************************************************
 // Handler de led1off
 //************************************************************************************************
@@ -303,6 +182,7 @@ void handle_led1off() {
   //Serial.println("GPIO2 Status: OFF");
   server.send(200, "text/html", SendHTML());
 }
+
 //************************************************************************************************
 // Procesador de HTML
 //************************************************************************************************
@@ -388,6 +268,7 @@ String generarHTMLSlot(String id, bool ocupado) {
   s += "</div>";
   return s;
 }
+
 //************************************************************************************************
 // Handler de not found
 //************************************************************************************************
