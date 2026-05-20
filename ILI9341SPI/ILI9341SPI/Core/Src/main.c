@@ -339,14 +339,14 @@ int main(void)
 
 				HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 			}
-
+/*
 	for(int i = 0; i < 4; i++){
 				if(ADCVal[i] < 1600) aTxBuffer[i] = 1; // Ocupado
 				else if (ADCVal[i] > 1800) aTxBuffer[i] = 0; // Libre
-			}
+			}*/
 			//-------------------------NIVEL A: Animación del NIVEL A enviado I2C--------------------------
 			// Parqueo A1
-			if (aRxBuffer[0] == 1) { // Valor del buffer enviado desde I2C igual a 1
+			if (aRxBuffer[3] == 1) { // Valor del buffer enviado desde I2C igual a 1
 				if (park1A == 0) { //Se ejecuta si el parqueo esta libre
 					park1A = 1; // Parqueo ocupado
 					color_A[0] = rand() % 6; //Random para el frame de los sprite
@@ -366,7 +366,7 @@ int main(void)
 			}
 
 			// Parqueo A2
-			if (aRxBuffer[1] == 1) { // Misma logica que en el primero
+			if (aRxBuffer[2] == 1) { // Misma logica que en el primero
 				if (park2A == 0) {
 					park2A = 1;
 					color_A[1] = rand() % 6;
@@ -386,7 +386,7 @@ int main(void)
 			}
 
 			// Parqueo A3
-			if (aRxBuffer[2] == 1) { // Misma logica que en el primero
+			if (aRxBuffer[1] == 1) { // Misma logica que en el primero
 				if (park3A == 0) {
 					park3A = 1;
 					color_A[2] = rand() % 6;
@@ -406,7 +406,7 @@ int main(void)
 			}
 
 			// Parqueo A4
-			if (aRxBuffer[3] == 1) { // Misma logica que en el primero
+			if (aRxBuffer[0] == 1) { // Misma logica que en el primero
 				if (park4A == 0) {
 					park4A = 1;
 					color_A[3] = rand() % 6;
@@ -428,7 +428,7 @@ int main(void)
 
 			//-------------------------NIVEL B: Animación del NIVEL B (Con sensores) --------------------------
 			// Parqueo B1
-			if (ADCVal[0] < 1600) { // Se lee el canal 0 del ADC, debe de ser menor a 1600
+			if (ADCVal[4] < 1600) { // Se lee el canal 0 del ADC, debe de ser menor a 1600
 				if (park1B == 0) { // Entra si el paqueo esta libre
 					park1B = 1; // Se pone el 1 para decir que esta ocupado
 					color_B[0] = rand() % 6; // Se genera un random para el frame que se mostrara
@@ -437,7 +437,7 @@ int main(void)
 					cant2++; // Aumenta la cantidad de parqueos diponibles.
 					parqueos_disponiblesB(cant2); // Se llama la función para mostrar la cantidad parqueos en pantalla
 				}
-			} else if (ADCVal[0] > 1800) { // Se lee el canal 0 del ADC, debe de ser mayor a 1800
+			} else if (ADCVal[4] > 1800) { // Se lee el canal 0 del ADC, debe de ser mayor a 1800
 				if (park1B == 1) { // Entra si el parqueo esta ocupado
 					park1B = 0; // Se pone en 0 para decir que esta libre
 					AnimarAutoEnParqueo(9, 163, 240, 41, 68, color_B[0], carroB, 246); // Se llama a la función de animación
@@ -448,7 +448,7 @@ int main(void)
 			}
 
 			// Parqueo B2
-			if (ADCVal[1] < 1600) { //Misma logica que el primer ADC
+			if (ADCVal[3] < 1600) { //Misma logica que el primer ADC
 				if (park2B == 0) {
 					park2B = 1;
 					color_B[1] = rand() % 6;
@@ -457,7 +457,7 @@ int main(void)
 					cant2++;
 					parqueos_disponiblesB(cant2);
 				}
-			} else if (ADCVal[1] > 1800) {
+			} else if (ADCVal[3] > 1800) {
 				if (park2B == 1) {
 					park2B = 0;
 					AnimarAutoEnParqueo(58, 163, 240, 41, 68, color_B[1], carroB, 246);
@@ -488,7 +488,7 @@ int main(void)
 			}
 
 			// Parqueo B4
-			if (ADCVal[3] < 1600) { //Misma logica que el primer ADC
+			if (ADCVal[1] < 1600) { //Misma logica que el primer ADC
 				if (park4B == 0) {
 					park4B = 1;
 					color_B[3] = rand() % 6;
@@ -497,7 +497,7 @@ int main(void)
 					cant2++;
 					parqueos_disponiblesB(cant2);
 				}
-			} else if (ADCVal[3] > 1800) {
+			} else if (ADCVal[1] > 1800) {
 				if (park4B == 1) {
 					park4B = 0;
 					AnimarAutoEnParqueo(155, 163, 240, 41, 68, color_B[3], carroB, 246);
@@ -508,13 +508,13 @@ int main(void)
 			}
 
 			//-------------------------HELIPUERTO: Animación --------------------------
-			if (ADCVal[4] < 1600) { //Misma logica que el primer ADC
+			if (ADCVal[0] < 1600) { //Misma logica que el primer ADC
 				if (park5A == 0) {
 					park5A = 1;
 					AnimarAutoEnParqueo(232, -80, 10, 61, 80, 1, helicop, 183);
 					LCD_DibujarSpriteUniversal(260, 205, 34, 20, semaforo, 0, 68, parking, 320, 0xe71c, park);
 				}
-			} else if (ADCVal[4] > 1800) {
+			} else if (ADCVal[0] > 1800) {
 				if (park5A == 1) {
 					park5A = 0;
 					AnimarAutoEnParqueo(232, 10, -80, 61, 80, 1, helicop, 183);
@@ -523,6 +523,10 @@ int main(void)
 			}
 			actualizar_leds();
     /* USER CODE END WHILE */
+		  aTxBuffer[0] = park1B; // Valor 1 si está ocupado, 0 si está libre
+		  aTxBuffer[1] = park2B;
+		  aTxBuffer[2] = park3B;
+		  aTxBuffer[3] = park4B;
 
     /* USER CODE BEGIN 3 */
 	}

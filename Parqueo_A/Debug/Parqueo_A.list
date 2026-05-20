@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000a05c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000122c2  00000000  00000000  0000a08c  2**0
+ 12 .debug_info   0001225b  00000000  00000000  0000a08c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000025b6  00000000  00000000  0001c34e  2**0
+ 13 .debug_abbrev 000025af  00000000  00000000  0001c2e7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000010f8  00000000  00000000  0001e908  2**3
+ 14 .debug_aranges 000010e8  00000000  00000000  0001e898  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000d76  00000000  00000000  0001fa00  2**0
+ 15 .debug_rnglists 00000d6a  00000000  00000000  0001f980  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00023a97  00000000  00000000  00020776  2**0
+ 16 .debug_macro  00023a97  00000000  00000000  000206ea  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00015239  00000000  00000000  0004420d  2**0
+ 17 .debug_line   000151c5  00000000  00000000  00044181  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e023a  00000000  00000000  00059446  2**0
+ 18 .debug_str    000e0218  00000000  00000000  00059346  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00139680  2**0
+ 19 .comment      00000043  00000000  00000000  0013955e  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004ba8  00000000  00000000  001396c4  2**2
+ 20 .debug_frame  00004b60  00000000  00000000  001395a4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000074  00000000  00000000  0013e26c  2**0
+ 21 .debug_line_str 00000074  00000000  00000000  0013e104  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1225,7 +1225,7 @@ int main(void)
  8000ed6:	482b      	ldr	r0, [pc, #172]	@ (8000f84 <main+0xd8>)
  8000ed8:	f001 f926 	bl	8002128 <HAL_ADC_Start_DMA>
 
-
+  //Inicialización del neopixel y seteo de brillo
   pixelClear();
  8000edc:	f000 fce2 	bl	80018a4 <pixelClear>
   setBrightness(50);
@@ -1234,38 +1234,39 @@ int main(void)
   pixelShow();
  8000ee6:	f000 fc3d 	bl	8001764 <pixelShow>
 
+  //Inicio de I2C y verificación de estabilidad
 	if (HAL_I2C_EnableListen_IT(&hi2c1) != HAL_OK) {
  8000eea:	4827      	ldr	r0, [pc, #156]	@ (8000f88 <main+0xdc>)
  8000eec:	f002 fd9d 	bl	8003a2a <HAL_I2C_EnableListen_IT>
  8000ef0:	4603      	mov	r3, r0
  8000ef2:	2b00      	cmp	r3, #0
  8000ef4:	d001      	beq.n	8000efa <main+0x4e>
-	Error_Handler();
+	Error_Handler(); //Mandar a error si falla.
  8000ef6:	f000 fbaf 	bl	8001658 <Error_Handler>
-		display_show(total_disponibles);
-
-		HAL_Delay(50);
-	    actualizar_leds();*/
-	  // 1. LEER MIS PROPIOS SENSORES (Nivel A) Y CARGARLOS AL BUFFER I2C
-	       for (int i = 0; i < 4; i++)
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+// Leer las entradas analogicas y mandalos por I2C:
+	   for (int i = 0; i < 4; i++)
  8000efa:	2300      	movs	r3, #0
  8000efc:	607b      	str	r3, [r7, #4]
  8000efe:	e02b      	b.n	8000f58 <main+0xac>
-	       {
-	           if (ADCVal[i] < 1600) {
+	   {
+		   if (ADCVal[i] < 1600) {
  8000f00:	4a1f      	ldr	r2, [pc, #124]	@ (8000f80 <main+0xd4>)
  8000f02:	687b      	ldr	r3, [r7, #4]
  8000f04:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
  8000f08:	b29b      	uxth	r3, r3
  8000f0a:	f5b3 6fc8 	cmp.w	r3, #1600	@ 0x640
  8000f0e:	d20c      	bcs.n	8000f2a <main+0x7e>
-	               aTxBuffer[i] = 1; // Ocupado
+			   aTxBuffer[i] = 1; // Ocupado
  8000f10:	4a1e      	ldr	r2, [pc, #120]	@ (8000f8c <main+0xe0>)
  8000f12:	687b      	ldr	r3, [r7, #4]
  8000f14:	4413      	add	r3, r2
  8000f16:	2201      	movs	r2, #1
  8000f18:	701a      	strb	r2, [r3, #0]
-	               setPixelColor(i, 255, 0, 0); // Led Rojo
+			   setPixelColor(i, 255, 0, 0); // Led Rojo
  8000f1a:	687b      	ldr	r3, [r7, #4]
  8000f1c:	b298      	uxth	r0, r3
  8000f1e:	2300      	movs	r3, #0
@@ -1273,59 +1274,58 @@ int main(void)
  8000f22:	21ff      	movs	r1, #255	@ 0xff
  8000f24:	f000 fb9e 	bl	8001664 <setPixelColor>
  8000f28:	e013      	b.n	8000f52 <main+0xa6>
-	           } else if (ADCVal[i] > 1800) {
+		   } else if (ADCVal[i] > 1800) {
  8000f2a:	4a15      	ldr	r2, [pc, #84]	@ (8000f80 <main+0xd4>)
  8000f2c:	687b      	ldr	r3, [r7, #4]
  8000f2e:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
  8000f32:	b29b      	uxth	r3, r3
  8000f34:	f5b3 6fe1 	cmp.w	r3, #1800	@ 0x708
  8000f38:	d90b      	bls.n	8000f52 <main+0xa6>
-	               aTxBuffer[i] = 0; // Libre
+			   aTxBuffer[i] = 0; // Libre
  8000f3a:	4a14      	ldr	r2, [pc, #80]	@ (8000f8c <main+0xe0>)
  8000f3c:	687b      	ldr	r3, [r7, #4]
  8000f3e:	4413      	add	r3, r2
  8000f40:	2200      	movs	r2, #0
  8000f42:	701a      	strb	r2, [r3, #0]
-	               setPixelColor(i, 0, 255, 0); // Led Verde
+			   setPixelColor(i, 0, 255, 0); // Led Verde
  8000f44:	687b      	ldr	r3, [r7, #4]
  8000f46:	b298      	uxth	r0, r3
  8000f48:	2300      	movs	r3, #0
  8000f4a:	22ff      	movs	r2, #255	@ 0xff
  8000f4c:	2100      	movs	r1, #0
  8000f4e:	f000 fb89 	bl	8001664 <setPixelColor>
-	       for (int i = 0; i < 4; i++)
+	   for (int i = 0; i < 4; i++)
  8000f52:	687b      	ldr	r3, [r7, #4]
  8000f54:	3301      	adds	r3, #1
  8000f56:	607b      	str	r3, [r7, #4]
  8000f58:	687b      	ldr	r3, [r7, #4]
  8000f5a:	2b03      	cmp	r3, #3
  8000f5c:	ddd0      	ble.n	8000f00 <main+0x54>
-	           }
-	       }
+		   }
+	   }
 
-	       // Actualizar Neopixeles del Nivel A
-	       pixelShow();
+	   // Actualizar Neopixeles del Nivel A
+	   pixelShow();
  8000f5e:	f000 fc01 	bl	8001764 <pixelShow>
 
-	       // 2. MOSTRAR EL TOTAL EN EL DISPLAY (Enviado por el ESP32)
-	       // aRxBuffer[0] tiene el cálculo exacto de espacios libres
-	       uint8_t total_disponibles = aRxBuffer[0];
+	   // Mostrar los valores en el display:
+	   uint8_t total_disponibles = aRxBuffer[0];
  8000f62:	4b0b      	ldr	r3, [pc, #44]	@ (8000f90 <main+0xe4>)
  8000f64:	781b      	ldrb	r3, [r3, #0]
  8000f66:	70fb      	strb	r3, [r7, #3]
 
-	       // Protección: Solo mostrar si es un número válido (0 a 8)
-	       if(total_disponibles <= 8) {
+	   // Verifica si ya se ocuparon todos los espacios antes de mostrarlo en el display.
+	   if(total_disponibles <= 8) {
  8000f68:	78fb      	ldrb	r3, [r7, #3]
  8000f6a:	2b08      	cmp	r3, #8
  8000f6c:	d803      	bhi.n	8000f76 <main+0xca>
-	           display_show(total_disponibles);
+		   display_show(total_disponibles);
  8000f6e:	78fb      	ldrb	r3, [r7, #3]
  8000f70:	4618      	mov	r0, r3
  8000f72:	f000 fa97 	bl	80014a4 <display_show>
-	       }
+	   }
 
-	       HAL_Delay(50);
+	   HAL_Delay(50);
  8000f76:	2032      	movs	r0, #50	@ 0x32
  8000f78:	f001 f86e 	bl	8002058 <HAL_Delay>
   {
@@ -2210,10 +2210,10 @@ static void MX_GPIO_Init(void)
  80014a0:	40020800 	.word	0x40020800
 
 080014a4 <display_show>:
-	0x67, // E
 	0x47  // F
 };
 
+//************************* Función para el orden del 7 Segmentos ************************
 void display_show(uint8_t numero)
 {
  80014a4:	b580      	push	{r7, lr}
@@ -2326,11 +2326,8 @@ void display_show(uint8_t numero)
  8001588:	080089a8 	.word	0x080089a8
 
 0800158c <HAL_I2C_ListenCpltCallback>:
-	if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF) {
-	Error_Handler();
-	}
-}
-*/
+
+//****************** Call back para el I2C *******************************
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
  800158c:	b580      	push	{r7, lr}
  800158e:	b082      	sub	sp, #8
@@ -2386,7 +2383,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef*hi2c, uint8_t TransferDirection, uin
  80015d6:	70fb      	strb	r3, [r7, #3]
  80015d8:	4613      	mov	r3, r2
  80015da:	803b      	strh	r3, [r7, #0]
-	if (TransferDirection == I2C_DIRECTION_TRANSMIT){ // maestro escribir
+	if (TransferDirection == I2C_DIRECTION_TRANSMIT){ // Enviar al maestro los datos
  80015dc:	78fb      	ldrb	r3, [r7, #3]
  80015de:	2b01      	cmp	r3, #1
  80015e0:	d10c      	bne.n	80015fc <HAL_I2C_AddrCallback+0x30>
@@ -2450,7 +2447,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle) {
  8001640:	2b04      	cmp	r3, #4
  8001642:	d002      	beq.n	800164a <HAL_I2C_ErrorCallback+0x1a>
 	    // Error_Handler();
-        HAL_I2C_EnableListen_IT(&hi2c1); // Volver a escuchar
+        HAL_I2C_EnableListen_IT(&hi2c1); // Volver a escuchar el I2C
  8001644:	4803      	ldr	r0, [pc, #12]	@ (8001654 <HAL_I2C_ErrorCallback+0x24>)
  8001646:	f002 f9f0 	bl	8003a2a <HAL_I2C_EnableListen_IT>
 	}
